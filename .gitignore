@@ -1,0 +1,25 @@
+# Python & Ambientes Virtuais
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+.venv/
+venv/
+ENV/
+.pytest_cache/
+
+# Bancos de dados locais (dados em produção ficam no Supabase)
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de backup HTML pesados e scripts temporários
+*.backup*.html
+*.backup*
+scratch_*
+scratch*
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
