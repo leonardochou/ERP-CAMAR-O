@@ -1,7 +1,7 @@
 """Aplicação principal FastAPI do ERP CAMARÃO (Ceará-Mirim/RN)."""
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import settings
@@ -38,15 +38,10 @@ app.add_middleware(
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 
-@app.get("/", tags=["Health Check"])
-def health_check():
-    """Endpoint raiz para verificação de disponibilidade do backend."""
-    return {
-        "sistema": settings.PROJECT_NAME,
-        "versao": settings.VERSION,
-        "status": "operacional",
-        "docs": "/docs"
-    }
+@app.get("/", include_in_schema=False)
+def root():
+    """Redireciona para o dashboard operacional."""
+    return RedirectResponse(url="/dashboard")
 
 
 @app.get("/health", tags=["Health Check"])
