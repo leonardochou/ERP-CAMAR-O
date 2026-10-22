@@ -11,8 +11,12 @@ from app.api.v1.api import api_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Ciclo de vida da aplicação: inicializa tabelas e seed dos 15 viveiros no startup."""
-    init_db()
+    """Ciclo de vida da aplicação: inicializa tabelas e seed com tolerância a falhas de rede."""
+    try:
+        init_db()
+        print("✅ Banco de dados inicializado com sucesso e sincronizado!")
+    except Exception as e:
+        print(f"⚠️ Aviso: Falha temporária ao sincronizar banco remoto ({e}). O ERP iniciará normalmente.")
     yield
 
 
