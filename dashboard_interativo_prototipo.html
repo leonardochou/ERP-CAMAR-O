@@ -165,11 +165,15 @@
       </div>
 
       <!-- Lista de Navegação dos Módulos com Scroll Interno -->
+            <!-- Lista de Navegação dos Módulos com Scroll Interno (5 Pilares Estratégicos) -->
       <nav class="flex-1 overflow-y-auto p-3 space-y-1 custom-scrollbar text-xs">
         
-        <!-- Bloco 1: Visão Geral -->
-        <div class="sidebar-section-title px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70">
-          Visão Geral
+        <!-- ============================================== -->
+        <!-- PILAR 1: COMANDO GERAL & VIVEIROS              -->
+        <!-- ============================================== -->
+        <div class="sidebar-section-title px-3 pt-2 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70 flex items-center gap-1.5">
+          <i class="fa-solid fa-compass text-cyan-400 text-[10px]"></i>
+          <span>1. Comando Geral & Viveiros</span>
         </div>
         <button onclick="navegarPara('dashboard-macro')" id="nav-dashboard-macro" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-semibold transition bg-aco text-white shadow-sm">
           <i class="fa-solid fa-chart-pie w-5 text-center text-cyan-300"></i>
@@ -187,12 +191,15 @@
           <span id="sidebar-audit-badge" class="sidebar-badge bg-alerta text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full shadow-sm">3</span>
         </button>
 
-        <!-- Bloco 2: Zootecnia & Manejo -->
-        <div class="sidebar-section-title px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70">
-          Zootecnia & Manejo
+        <!-- ============================================== -->
+        <!-- PILAR 2: MANEJO ZOOTÉCNICO & ÁGUA              -->
+        <!-- ============================================== -->
+        <div class="sidebar-section-title px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70 flex items-center gap-1.5">
+          <i class="fa-solid fa-shrimp text-blue-300 text-[10px]"></i>
+          <span>2. Manejo Zootécnico & Água</span>
         </div>
         <button onclick="navegarPara('analytics-biomassa')" id="nav-analytics-biomassa" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-shrimp w-5 text-center text-blue-300"></i>
+          <i class="fa-solid fa-chart-line w-5 text-center text-blue-300"></i>
           <span class="sidebar-label">Biometria & Biomassa</span>
         </button>
         <button onclick="navegarPara('analytics-fca')" id="nav-analytics-fca" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
@@ -207,73 +214,60 @@
           <i class="fa-solid fa-droplet w-5 text-center text-cyan-400"></i>
           <span class="sidebar-label">Qualidade da Água</span>
         </button>
-        <button onclick="navegarPara('analytics-povoamento')" id="nav-analytics-povoamento" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-seedling w-5 text-center text-teal-300"></i>
-          <span class="sidebar-label">Berçários & Pós-Larvas</span>
-        </button>
         <button onclick="navegarPara('analytics-ciclos')" id="nav-analytics-ciclos" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-arrows-spin w-5 text-center text-cyan-400"></i>
-          <span class="sidebar-label">Ciclos de Produção</span>
-        </button>
-        <button onclick="navegarPara('analytics-despesca')" id="nav-analytics-despesca" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-truck-ramp-box w-5 text-center text-indigo-300"></i>
-          <span class="sidebar-label">Despesca & Vendas</span>
+          <i class="fa-solid fa-arrows-spin w-5 text-center text-teal-300"></i>
+          <span class="sidebar-label">Ciclos & Berçários</span>
         </button>
 
-        <!-- Bloco 3: Gestão & Operação -->
-        <div class="sidebar-section-title px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70">
-          Gestão & Operação
+        <!-- ============================================== -->
+        <!-- PILAR 3: COLHEITA & MERCADO                    -->
+        <!-- ============================================== -->
+        <div class="sidebar-section-title px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70 flex items-center gap-1.5">
+          <i class="fa-solid fa-truck-ramp-box text-indigo-300 text-[10px]"></i>
+          <span>3. Colheita & Mercado</span>
         </div>
-        <button onclick="navegarPara('analytics-estoque')" id="nav-analytics-estoque" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
+        <button onclick="navegarPara('analytics-despesca')" id="nav-analytics-despesca" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
+          <i class="fa-solid fa-truck-ramp-box w-5 text-center text-indigo-300"></i>
+          <span class="sidebar-label">Despesca & Safras</span>
+        </button>
+        <button onclick="navegarPara('analytics-estoque')" id="nav-analytics-estoque" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
           <i class="fa-solid fa-boxes-stacked w-5 text-center text-orange-300"></i>
           <span class="sidebar-label">Estoque de Ração</span>
         </button>
-        <button onclick="navegarPara('analytics-equipe')" id="nav-analytics-equipe" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-users-gear w-5 text-center text-violet-300"></i>
-          <span class="sidebar-label">Equipe & Vigia Noturno</span>
-        </button>
-        <button onclick="navegarPara('analytics-mercado')" id="nav-analytics-mercado" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
+        <button onclick="navegarPara('analytics-mercado')" id="nav-analytics-mercado" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
           <i class="fa-solid fa-arrow-trend-up w-5 text-center text-emerald-300"></i>
           <span class="sidebar-label">Cotações ABCC & Mercado</span>
         </button>
 
-        <!-- Bloco 4: Contabilidade -->
+        <!-- ============================================== -->
+        <!-- PILAR 4: CONTABILIDADE & FINANCEIRO            -->
+        <!-- ============================================== -->
         <div class="sidebar-section-title px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70 flex items-center justify-between">
-          <span class="flex items-center gap-1.5"><i class="fa-solid fa-scale-unbalanced-flip text-amber-400"></i> Contabilidade</span>
+          <span class="flex items-center gap-1.5">
+            <i class="fa-solid fa-scale-unbalanced-flip text-amber-400 text-[10px]"></i>
+            <span>4. Contabilidade</span>
+          </span>
           <span class="px-1.5 py-0.2 rounded bg-amber-400/20 text-amber-300 text-[9px] font-extrabold font-mono">2026/2</span>
         </div>
-        <button onclick="navegarPara('contabil-resumo')" id="nav-contabil-resumo" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-chart-pie w-5 text-center text-amber-300"></i>
-          <span class="sidebar-label">Resumo Contábil</span>
-        </button>
-        <button onclick="navegarPara('contabil-dre')" id="nav-contabil-dre" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-file-invoice-dollar w-5 text-center text-emerald-400"></i>
-          <span class="sidebar-label">DRE</span>
-        </button>
-        <button onclick="navegarPara('contabil-fluxo')" id="nav-contabil-fluxo" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-money-bill-trend-up w-5 text-center text-cyan-300"></i>
-          <span class="sidebar-label">Fluxo de Caixa</span>
-        </button>
-        <button onclick="navegarPara('contabil-plano')" id="nav-contabil-plano" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-sitemap w-5 text-center text-yellow-300"></i>
-          <span class="sidebar-label">Plano de Contas</span>
-        </button>
-        <button onclick="navegarPara('contabil-lancamentos')" id="nav-contabil-lancamentos" class="nav-item w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-book-journal-whills w-5 text-center text-indigo-300"></i>
-          <span class="sidebar-label">Lançamentos</span>
-        </button>
-        <button onclick="navegarPara('contabil-ged')" id="nav-contabil-ged" class="nav-item w-full flex items-center justify-between px-3 py-2 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
+        <button onclick="navegarPara('analytics-financeiro')" id="nav-analytics-financeiro" class="nav-item w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
           <div class="flex items-center space-x-3 truncate">
-            <i class="fa-solid fa-folder-tree w-5 text-center text-amber-200"></i>
-            <span class="sidebar-label truncate">Notas, Drive & Backup</span>
+            <i class="fa-solid fa-file-invoice-dollar w-5 text-center text-amber-300"></i>
+            <span class="sidebar-label truncate">DRE, Caixa & Contas</span>
           </div>
-          <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-emerald-500/30 text-emerald-300">GED</span>
+          <span class="px-1.5 py-0.5 rounded text-[9px] font-extrabold bg-blue-500/30 text-blue-200">HUB</span>
         </button>
 
-        <!-- Bloco 4: Configurações & Calibração -->
-        <div class="sidebar-section-title px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70">
-          Configurações da Fazenda
+        <!-- ============================================== -->
+        <!-- PILAR 5: GESTÃO DA FAZENDA                     -->
+        <!-- ============================================== -->
+        <div class="sidebar-section-title px-3 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-blue-300/70 flex items-center gap-1.5">
+          <i class="fa-solid fa-gears text-violet-300 text-[10px]"></i>
+          <span>5. Gestão da Fazenda</span>
         </div>
+        <button onclick="navegarPara('analytics-equipe')" id="nav-analytics-equipe" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
+          <i class="fa-solid fa-users-gear w-5 text-center text-violet-300"></i>
+          <span class="sidebar-label">Equipe & Vigia Noturno</span>
+        </button>
         <button onclick="navegarPara('analytics-parametros')" id="nav-analytics-parametros" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
           <i class="fa-solid fa-sliders w-5 text-center text-teal-300"></i>
           <span class="sidebar-label">Parâmetros & Calibração</span>
@@ -7412,7 +7406,7 @@
           btn.classList.remove('bg-aco', 'text-white', 'shadow-sm');
           btn.classList.add('text-blue-200');
         });
-        const activeNavBtn = document.getElementById(`nav-${viewId}`) || document.getElementById(`nav-contabil-${conf.aba}`);
+        const activeNavBtn = document.getElementById(`nav-${viewId}`) || document.getElementById(`nav-contabil-${conf.aba}`) || document.getElementById('nav-analytics-financeiro');
         if (activeNavBtn) {
           activeNavBtn.classList.remove('text-blue-200');
           activeNavBtn.classList.add('bg-aco', 'text-white', 'shadow-sm');
