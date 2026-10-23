@@ -1836,6 +1836,80 @@
           </div>
         </div>
 
+        <!-- [SUG-03] BANNER EXECUTIVO: TERMÔMETRO DE LUCRATIVIDADE & CUSTO/KG -->
+        <div class="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-5 text-white shadow-md border border-slate-800 space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-white/10 pb-3">
+            <div class="flex items-center space-x-2.5">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-sm border border-emerald-500/30">
+                <i class="fa-solid fa-coins"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-white tracking-wide flex items-center gap-2">
+                  Termômetro de Lucratividade & Saúde Financeira do Lote
+                  <span id="detail-fin-status-badge" class="px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    🟢 Margem Saudável
+                  </span>
+                </h3>
+                <p class="text-[11px] text-slate-300">Cruzamento em tempo real de ração consumida, insumos, biomassa e cotação regional ABCC</p>
+              </div>
+            </div>
+
+            <!-- Botão de Atalho para o Simulador -->
+            <button onclick="abrirSimuladorParaViveiroAtual()" class="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-black text-xs shadow-lg transition flex items-center gap-2 cursor-pointer">
+              <i class="fa-solid fa-calculator"></i>
+              <span>Simular Despesca Deste Viveiro</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </button>
+          </div>
+
+          <!-- Métricas Financeiras -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+            <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Custo Total Acumulado</span>
+              <div id="detail-fin-custo-acumulado" class="text-lg font-black text-white font-mono mt-0.5">R$ 26.506</div>
+              <span class="text-[10px] text-slate-400">Ração + PLs + Operação</span>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Custo por Kg Produzido</span>
+              <div id="detail-fin-custo-kg" class="text-lg font-black text-amber-300 font-mono mt-0.5">R$ 7,75 / kg</div>
+              <span id="detail-fin-custo-kg-sub" class="text-[10px] text-emerald-400 font-medium">Abaixo da média regional</span>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Receita Bruta Estimada</span>
+              <div id="detail-fin-receita-proj" class="text-lg font-black text-emerald-400 font-mono mt-0.5">R$ 75.240</div>
+              <span id="detail-fin-cotacao-usada" class="text-[10px] text-slate-300">Base ABCC: R$ 22,00 / kg</span>
+            </div>
+
+            <div class="bg-white/5 border border-white/10 rounded-xl p-3">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Margem de Contribuição</span>
+              <div id="detail-fin-margem-bruta" class="text-lg font-black text-emerald-300 font-mono mt-0.5">R$ 48.734 (+64,8%)</div>
+              <span class="text-[10px] text-slate-400">Lucro operacional do lote</span>
+            </div>
+          </div>
+
+          <!-- Barra Termômetro Visual -->
+          <div class="space-y-1.5 pt-1">
+            <div class="flex items-center justify-between text-[11px] font-semibold text-slate-300">
+              <span class="flex items-center gap-1.5">
+                <i class="fa-solid fa-gauge-high text-emerald-400"></i> Intensidade de Lucro do Tanque:
+                <strong id="detail-fin-margem-pct-label" class="text-white">64.8%</strong>
+              </span>
+              <span id="detail-fin-diagnostico-curto" class="text-emerald-300 text-[10px] font-bold">Excelente retorno por kg</span>
+            </div>
+            <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden p-0.5 border border-white/10">
+              <div id="detail-fin-termometro-bar" class="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-emerald-500 to-teal-400" style="width: 64.8%;"></div>
+            </div>
+            <div class="flex justify-between text-[9px] text-slate-400 font-mono px-1">
+              <span>0% (Empate)</span>
+              <span>15% (Atenção)</span>
+              <span>30% (Meta)</span>
+              <span>50%+ (Superávit)</span>
+            </div>
+          </div>
+        </div>
+
         <!-- Dois Gráficos do Tanque: Biometria e Oxigênio -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
@@ -3469,6 +3543,233 @@
             </span>
             <div class="text-2xl font-black text-violet-950 font-mono" id="kpi-despesca-peso-medio">15.2 g</div>
             <div class="text-[10px] text-violet-700 font-semibold">Gama: 13.5g a 17.2g</div>
+          </div>
+        </div>
+
+        <!-- [SUG-01] SIMULADOR DE DESPESCA ÓTIMA & DECISÃO ZOOTÉCNICA -->
+        <div id="painel-simulador-despesca" class="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-5">
+          <!-- Topo do Simulador -->
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div class="space-y-0.5">
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-indigo-100 text-indigo-700">
+                  <i class="fa-solid fa-microchip"></i> Inteligência Zootécnica & Comercial
+                </span>
+                <span class="text-xs text-slate-400">•</span>
+                <span class="text-xs text-slate-500 font-semibold">Litopenaeus vannamei</span>
+              </div>
+              <h3 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                Simulador de Despesca Ótima <span class="text-indigo-600 font-normal text-sm">("Despescar Hoje vs Segurar +7 ou +14 Dias")</span>
+              </h3>
+              <p class="text-xs text-slate-500">
+                Cruza ganho de peso projetado (GMD), custo adicional de ração e energia com a tabela de cotações ABCC para apontar o momento mais lucrativo de colheita.
+              </p>
+            </div>
+
+            <!-- Seletor do Viveiro para Simulação -->
+            <div class="flex items-center gap-2 bg-indigo-50/70 p-1.5 rounded-xl border border-indigo-100 w-full sm:w-auto">
+              <label for="sim-select-viveiro" class="text-xs font-bold text-indigo-900 pl-2 whitespace-nowrap">
+                <i class="fa-solid fa-water"></i> Viveiro Ativo:
+              </label>
+              <select id="sim-select-viveiro" onchange="selecionarViveiroSimulador(this.value)" class="bg-white text-xs font-extrabold text-slate-900 py-1.5 px-3 rounded-lg border border-indigo-200 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <!-- Populado dinamicamente -->
+              </select>
+            </div>
+          </div>
+
+          <!-- 3 Cards Comparativos de Cenários -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Cenário 1: Despescar Hoje -->
+            <div class="bg-slate-50/80 rounded-xl p-4 border border-slate-200 space-y-3 relative overflow-hidden">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black uppercase text-slate-600 tracking-wider">Cenário 1: Hoje</span>
+                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">Imediato</span>
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Peso Médio:</span>
+                  <strong id="sim-cen-hoje-peso" class="text-sm font-black text-slate-800">12.4 g</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Biomassa Estimada:</span>
+                  <strong id="sim-cen-hoje-biomassa" class="text-sm font-black text-slate-800">3.420 kg</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Cotação Base:</span>
+                  <strong id="sim-cen-hoje-cotacao" class="text-sm font-black text-slate-800">R$ 21,50 / kg</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Receita Bruta:</span>
+                  <strong id="sim-cen-hoje-receita" class="text-sm font-black text-indigo-900">R$ 73.530</strong>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-slate-200 flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-600">Lucro Operacional:</span>
+                <span id="sim-cen-hoje-lucro" class="text-base font-black text-slate-900 font-mono">R$ 47.024</span>
+              </div>
+            </div>
+
+            <!-- Cenário 2: Segurar +7 Dias -->
+            <div class="bg-indigo-50/50 rounded-xl p-4 border-2 border-indigo-200 space-y-3 relative overflow-hidden shadow-sm">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black uppercase text-indigo-900 tracking-wider">Cenário 2: +7 Dias</span>
+                <span id="sim-cen-7d-badge" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 border border-indigo-200">+1 Semana</span>
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Peso Projetado:</span>
+                  <strong id="sim-cen-7d-peso" class="text-sm font-black text-indigo-950">13.7 g (+1.35g)</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Biomassa Projetada:</span>
+                  <strong id="sim-cen-7d-biomassa" class="text-sm font-black text-indigo-950">3.750 kg</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Custo da Semana (Ração + Ops):</span>
+                  <strong id="sim-cen-7d-custo-extra" class="text-sm font-black text-amber-700">R$ 3.395</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Nova Receita:</span>
+                  <strong id="sim-cen-7d-receita" class="text-sm font-black text-emerald-700">R$ 88.125</strong>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-indigo-200 flex items-center justify-between">
+                <span class="text-xs font-bold text-indigo-900">Ganho Líquido Marginal:</span>
+                <span id="sim-cen-7d-delta" class="text-base font-black text-emerald-600 font-mono">+R$ 11.200</span>
+              </div>
+            </div>
+
+            <!-- Cenário 3: Segurar +14 Dias -->
+            <div class="bg-slate-50/80 rounded-xl p-4 border border-slate-200 space-y-3 relative overflow-hidden">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-black uppercase text-slate-600 tracking-wider">Cenário 3: +14 Dias</span>
+                <span class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-slate-200 text-slate-700">+2 Semanas</span>
+              </div>
+              <div class="space-y-1">
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Peso Projetado:</span>
+                  <strong id="sim-cen-14d-peso" class="text-sm font-black text-slate-800">15.1 g (+2.70g)</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Biomassa Projetada:</span>
+                  <strong id="sim-cen-14d-biomassa" class="text-sm font-black text-slate-800">4.100 kg</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Custo Acumulado (14d):</span>
+                  <strong id="sim-cen-14d-custo-extra" class="text-sm font-black text-amber-700">R$ 6.940</strong>
+                </div>
+                <div class="flex items-baseline justify-between">
+                  <span class="text-xs text-slate-500">Nova Receita:</span>
+                  <strong id="sim-cen-14d-receita" class="text-sm font-black text-indigo-900">R$ 102.500</strong>
+                </div>
+              </div>
+              <div class="pt-2 border-t border-slate-200 flex items-center justify-between">
+                <span class="text-xs font-bold text-slate-600">Ganho Líquido Marginal:</span>
+                <span id="sim-cen-14d-delta" class="text-base font-black text-emerald-600 font-mono">+R$ 22.030</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Caixa de Veredito Inteligente -->
+          <div id="sim-veredito-card" class="rounded-xl p-4 border flex items-start gap-3.5 bg-emerald-50 border-emerald-200 text-emerald-950">
+            <div id="sim-veredito-icon" class="text-2xl text-emerald-600 mt-0.5">
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="space-y-1 flex-1">
+              <div class="flex items-center justify-between">
+                <h4 id="sim-veredito-titulo" class="text-sm font-black uppercase tracking-wide text-emerald-900">
+                  RECOMENDAÇÃO: VALE A PENA SEGURAR +7 DIAS
+                </h4>
+                <span id="sim-veredito-tag" class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900">
+                  Lucro Marginal Alto
+                </span>
+              </div>
+              <p id="sim-veredito-texto" class="text-xs text-emerald-900 leading-relaxed">
+                O ganho médio semanal estimado de +1.35g elevará a biomassa de 3.420 kg para 3.750 kg. O camarão saltará para a faixa comercial da ABCC, gerando receita suficiente para cobrir os custos operacionais e de ração da semana com margem líquida positiva.
+              </p>
+            </div>
+          </div>
+
+          <!-- Painel Interativo de Projeção Livre (Slider + Parâmetros) -->
+          <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+              <span class="text-xs font-extrabold text-slate-800 uppercase tracking-wide flex items-center gap-1.5">
+                <i class="fa-solid fa-sliders text-indigo-600"></i> Projeção Personalizada & Ajuste de Mercado
+              </span>
+              <span class="text-[11px] text-slate-500">Mova o slider ou altere os valores para testar outros cenários</span>
+            </div>
+
+            <!-- Slider de Dias Extras -->
+            <div class="space-y-2">
+              <div class="flex items-center justify-between text-xs">
+                <label for="sim-slider-dias" class="font-bold text-slate-700">Segurar por quantos dias a mais?</label>
+                <div class="font-black text-indigo-900 text-sm">
+                  <span id="sim-slider-dias-val">7</span> dias extras 
+                  <span id="sim-slider-data-projetada" class="text-xs text-slate-500 font-normal">(Colheita prevista em 30/10/2026)</span>
+                </div>
+              </div>
+              <input type="range" id="sim-slider-dias" min="0" max="30" value="7" step="1" oninput="atualizarSliderDespesca(this.value)" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono">
+                <span>0d (Hoje)</span>
+                <span>+5d</span>
+                <span>+10d</span>
+                <span>+15d</span>
+                <span>+20d</span>
+                <span>+25d</span>
+                <span>+30d (1 Mês)</span>
+              </div>
+            </div>
+
+            <!-- Inputs de Ajuste de Custo e Preço -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <label class="text-[10px] font-bold text-slate-500 uppercase block">Cotação do Dia (R$/kg)</label>
+                <div class="flex items-center gap-1 mt-1">
+                  <span class="text-xs font-bold text-slate-400">R$</span>
+                  <input type="number" id="sim-input-preco-venda" step="0.5" value="23.50" onchange="recalcularSimuladorDespesca()" class="w-full text-xs font-black text-slate-900 focus:outline-none">
+                </div>
+                <span class="text-[9px] text-slate-400">Sugerido da ABCC ou negociado</span>
+              </div>
+
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <label class="text-[10px] font-bold text-slate-500 uppercase block">Preço da Ração (R$/kg)</label>
+                <div class="flex items-center gap-1 mt-1">
+                  <span class="text-xs font-bold text-slate-400">R$</span>
+                  <input type="number" id="sim-input-preco-racao" step="0.1" value="5.80" onchange="recalcularSimuladorDespesca()" class="w-full text-xs font-black text-slate-900 focus:outline-none">
+                </div>
+                <span class="text-[9px] text-slate-400">Ração padrão 35% PB</span>
+              </div>
+
+              <div class="bg-white p-2.5 rounded-lg border border-slate-200">
+                <label class="text-[10px] font-bold text-slate-500 uppercase block">Custo Fixo/Tanque (R$/dia)</label>
+                <div class="flex items-center gap-1 mt-1">
+                  <span class="text-xs font-bold text-slate-400">R$</span>
+                  <input type="number" id="sim-input-custo-diario" step="5" value="50.00" onchange="recalcularSimuladorDespesca()" class="w-full text-xs font-black text-slate-900 focus:outline-none">
+                </div>
+                <span class="text-[9px] text-slate-400">Energia dos aeradores + mão de obra</span>
+              </div>
+            </div>
+
+            <!-- Resumo da Projeção Personalizada -->
+            <div class="bg-indigo-950 text-white rounded-lg p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-lg bg-indigo-800 text-indigo-300 flex items-center justify-center font-bold text-base">
+                  <i class="fa-solid fa-chart-pie"></i>
+                </div>
+                <div>
+                  <div class="text-xs font-black text-white">Resultado da Projeção Personalizada:</div>
+                  <div class="text-[11px] text-indigo-200">
+                    Peso final: <strong id="sim-res-peso" class="text-white">13.7 g</strong> • 
+                    Biomassa: <strong id="sim-res-biomassa" class="text-white">3.750 kg</strong> • 
+                    Custo adicional: <strong id="sim-res-custo-extra" class="text-amber-300">R$ 3.395</strong>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] uppercase font-bold text-indigo-300 block">Lucro Líquido Projetado</span>
+                <span id="sim-res-lucro" class="text-lg font-black text-emerald-400 font-mono">R$ 58.224</span>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -7469,6 +7770,7 @@
         if (param) carregarDetalhesViveiro(param);
       } else if (viewId === 'analytics-despesca') {
         atualizarHeaderNavegacao('Despesca, Safras & Comercialização', 'Início > Zootecnia > Despesca');
+        if (param) simViveiroSelecionadoId = param;
         renderizarModuloDespesca();
       } else if (viewId === 'analytics-parametros') {
         atualizarHeaderNavegacao('Central de Parâmetros & Calibração', 'Início > Configurações > Parâmetros');
@@ -7515,6 +7817,7 @@
       // Diário de bordo simulado
       renderizarDiarioBordoViveiro(v);
       renderizarGraficosDoViveiro(v);
+      atualizarTermometroFichaViveiro(v);
     }
 
     function renderizarDiarioBordoViveiro(v) {
@@ -11518,6 +11821,350 @@
     let chartDespescaVolInst = null;
     let chartDespescaFcaInst = null;
 
+
+    // ========================================================
+    // [SUG-01 & SUG-03] INTELIGÊNCIA ZOOTÉCNICA, PREVISÃO & SIMULADOR
+    // ========================================================
+
+    // Tabela oficial regional ABCC com interpolação linear
+    function interpolarPrecoABCC(gramas) {
+      const g = parseFloat(gramas) || 12.0;
+      const tabela = [
+        { g: 8.0, preco: 15.00 },
+        { g: 10.0, preco: 18.50 },
+        { g: 12.0, preco: 21.50 },
+        { g: 14.0, preco: 24.00 },
+        { g: 16.0, preco: 27.50 },
+        { g: 18.0, preco: 31.00 },
+        { g: 20.0, preco: 35.00 }
+      ];
+
+      if (g <= tabela[0].g) return tabela[0].preco;
+      if (g >= tabela[tabela.length - 1].g) return tabela[tabela.length - 1].preco;
+
+      for (let i = 0; i < tabela.length - 1; i++) {
+        const p1 = tabela[i];
+        const p2 = tabela[i+1];
+        if (g >= p1.g && g <= p2.g) {
+          const fracao = (g - p1.g) / (p2.g - p1.g);
+          return +(p1.preco + fracao * (p2.preco - p1.preco)).toFixed(2);
+        }
+      }
+      return 22.00;
+    }
+
+    // Calcula custos acumulados e lucratividade de um tanque
+    function calcularFinanceiroViveiro(v) {
+      if (!v) return null;
+      const racaoKg = v.racaoAcumuladaKg || 0;
+      const precoRacao = 5.80; // R$/kg padrão
+      const custoRacao = racaoKg * precoRacao;
+      
+      // Custo de pós-larva: densidade * área_m2 * R$ 0.016 por PL
+      const densidade = v.densidade || 22;
+      const areaM2 = v.area_m2 || 12000;
+      const populacaoInicial = densidade * areaM2;
+      const custoPL = populacaoInicial * 0.016;
+
+      // Custo diário operacional (energia dos aeradores + vigia/mão de obra)
+      const ddc = v.ddc || 0;
+      const custoOperacional = ddc * 50.0;
+
+      const custoTotal = Math.round(custoRacao + custoPL + custoOperacional);
+      const biomassaKg = v.biomassaKg || 1;
+      const custoPorKg = +(custoTotal / biomassaKg).toFixed(2);
+
+      const cotacaoABCC = interpolarPrecoABCC(v.pesoMedio || 12);
+      const receitaEstimada = Math.round(biomassaKg * cotacaoABCC);
+      const lucroEstimado = receitaEstimada - custoTotal;
+      const margemPct = receitaEstimada > 0 ? +((lucroEstimado / receitaEstimada) * 100).toFixed(1) : 0;
+
+      return {
+        custoTotal,
+        custoPorKg,
+        cotacaoABCC,
+        receitaEstimada,
+        lucroEstimado,
+        margemPct
+      };
+    }
+
+    // Atualiza o banner do termômetro de lucratividade na Ficha do Viveiro
+    function atualizarTermometroFichaViveiro(v) {
+      const fin = calcularFinanceiroViveiro(v);
+      if (!fin) return;
+
+      const elCustoTotal = document.getElementById('detail-fin-custo-acumulado');
+      const elCustoKg = document.getElementById('detail-fin-custo-kg');
+      const elReceita = document.getElementById('detail-fin-receita-proj');
+      const elCotacao = document.getElementById('detail-fin-cotacao-usada');
+      const elMargem = document.getElementById('detail-fin-margem-bruta');
+      const elBarra = document.getElementById('detail-fin-termometro-bar');
+      const elPctLabel = document.getElementById('detail-fin-margem-pct-label');
+      const elBadge = document.getElementById('detail-fin-status-badge');
+      const elDiag = document.getElementById('detail-fin-diagnostico-curto');
+
+      if (elCustoTotal) elCustoTotal.textContent = `R$ ${fin.custoTotal.toLocaleString('pt-BR')}`;
+      if (elCustoKg) elCustoKg.textContent = `R$ ${fin.custoPorKg.toFixed(2).replace('.', ',')} / kg`;
+      if (elReceita) elReceita.textContent = `R$ ${fin.receitaEstimada.toLocaleString('pt-BR')}`;
+      if (elCotacao) elCotacao.textContent = `Base ABCC: R$ ${fin.cotacaoABCC.toFixed(2).replace('.', ',')} / kg (${v.pesoMedio}g)`;
+      
+      const sinalLucro = fin.lucroEstimado >= 0 ? '+' : '';
+      if (elMargem) {
+        elMargem.textContent = `R$ ${fin.lucroEstimado.toLocaleString('pt-BR')} (${sinalLucro}${fin.margemPct}%)`;
+        elMargem.className = fin.lucroEstimado >= 0 ? 'text-lg font-black text-emerald-300 font-mono mt-0.5' : 'text-lg font-black text-rose-400 font-mono mt-0.5';
+      }
+
+      if (elPctLabel) elPctLabel.textContent = `${fin.margemPct}%`;
+
+      const barraLargura = Math.max(5, Math.min(100, Math.max(0, fin.margemPct)));
+      if (elBarra) {
+        elBarra.style.width = `${barraLargura}%`;
+        if (fin.margemPct >= 25) {
+          elBarra.className = 'h-full rounded-full transition-all duration-500 bg-gradient-to-r from-emerald-500 to-teal-400';
+          if (elBadge) {
+            elBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-300 border border-emerald-500/30';
+            elBadge.textContent = '🟢 Margem Saudável';
+          }
+          if (elDiag) elDiag.textContent = 'Excelente retorno por kg';
+        } else if (fin.margemPct >= 10) {
+          elBarra.className = 'h-full rounded-full transition-all duration-500 bg-gradient-to-r from-amber-500 to-yellow-400';
+          if (elBadge) {
+            elBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-300 border border-amber-500/30';
+            elBadge.textContent = '🟡 Margem Apertada';
+          }
+          if (elDiag) elDiag.textContent = 'Atenção ao custo da ração';
+        } else {
+          elBarra.className = 'h-full rounded-full transition-all duration-500 bg-gradient-to-r from-rose-500 to-red-600';
+          if (elBadge) {
+            elBadge.className = 'px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-rose-500/20 text-rose-300 border border-rose-500/30';
+            elBadge.textContent = '🔴 Alerta de Prejuízo';
+          }
+          if (elDiag) elDiag.textContent = 'Custo superando receita';
+        }
+      }
+    }
+
+    // Atalho da ficha do viveiro direto para o simulador
+    function abrirSimuladorParaViveiroAtual() {
+      const v = selectedViveiro || VIVEIROS_DATA[0];
+      simViveiroSelecionadoId = v.id;
+      navegarPara('analytics-despesca', v.id);
+    }
+
+    let simViveiroSelecionadoId = null;
+
+    function inicializarSimuladorDespesca() {
+      const sel = document.getElementById('sim-select-viveiro');
+      if (!sel) return;
+
+      const viveirosAtivos = VIVEIROS_DATA.filter(v => v.tipoUso === 'Engorda' && v.biomassaKg > 0);
+      if (viveirosAtivos.length === 0) return;
+
+      sel.innerHTML = viveirosAtivos.map(v => `<option value="${v.id}">${v.nome} (${v.id}) - ${v.pesoMedio}g | ${v.biomassaKg}kg</option>`).join('');
+
+      if (!simViveiroSelecionadoId || !viveirosAtivos.some(x => x.id === simViveiroSelecionadoId)) {
+        simViveiroSelecionadoId = viveirosAtivos[0].id;
+      }
+      sel.value = simViveiroSelecionadoId;
+      carregarSimuladorDespesca(simViveiroSelecionadoId);
+    }
+
+    function selecionarViveiroSimulador(vivId) {
+      simViveiroSelecionadoId = vivId;
+      const sel = document.getElementById('sim-select-viveiro');
+      if (sel) sel.value = vivId;
+      carregarSimuladorDespesca(vivId);
+    }
+
+    function carregarSimuladorDespesca(vivId) {
+      const v = VIVEIROS_DATA.find(x => x.id === vivId) || VIVEIROS_DATA[0];
+      if (!v) return;
+
+      // Sugere cotação de mercado para a gramatura atual
+      const cotacaoSugerida = interpolarPrecoABCC(v.pesoMedio || 12);
+      const inputPreco = document.getElementById('sim-input-preco-venda');
+      if (inputPreco) inputPreco.value = cotacaoSugerida.toFixed(2);
+
+      recalcularSimuladorDespesca();
+    }
+
+    function recalcularSimuladorDespesca() {
+      const vivId = simViveiroSelecionadoId || (document.getElementById('sim-select-viveiro') ? document.getElementById('sim-select-viveiro').value : 'V-01');
+      const v = VIVEIROS_DATA.find(x => x.id === vivId) || VIVEIROS_DATA[0];
+      if (!v) return;
+
+      const precoVendaAtual = parseFloat(document.getElementById('sim-input-preco-venda')?.value) || interpolarPrecoABCC(v.pesoMedio || 12);
+      const precoRacao = parseFloat(document.getElementById('sim-input-preco-racao')?.value) || 5.80;
+      const custoDiario = parseFloat(document.getElementById('sim-input-custo-diario')?.value) || 50.00;
+      const diasExtras = parseInt(document.getElementById('sim-slider-dias')?.value) || 7;
+
+      const gmd = (v.ganhoSemanal || 1.20) / 7.0; // g/dia
+      const pesoHoje = v.pesoMedio || 12.0;
+      const biomassaHoje = v.biomassaKg || 3000;
+      const racaoHojeDia = v.racaoHojeKg || 60;
+      const finHoje = calcularFinanceiroViveiro(v);
+
+      // --- Cenário 1: Hoje ---
+      const receitaHoje = Math.round(biomassaHoje * precoVendaAtual);
+      const lucroHoje = receitaHoje - (finHoje ? finHoje.custoTotal : Math.round(biomassaHoje * 7.5));
+
+      const elHojePeso = document.getElementById('sim-cen-hoje-peso');
+      const elHojeBiomassa = document.getElementById('sim-cen-hoje-biomassa');
+      const elHojeCotacao = document.getElementById('sim-cen-hoje-cotacao');
+      const elHojeReceita = document.getElementById('sim-cen-hoje-receita');
+      const elHojeLucro = document.getElementById('sim-cen-hoje-lucro');
+
+      if (elHojePeso) elHojePeso.textContent = `${pesoHoje.toFixed(1)} g`;
+      if (elHojeBiomassa) elHojeBiomassa.textContent = `${biomassaHoje.toLocaleString('pt-BR')} kg`;
+      if (elHojeCotacao) elHojeCotacao.textContent = `R$ ${precoVendaAtual.toFixed(2).replace('.', ',')} / kg`;
+      if (elHojeReceita) elHojeReceita.textContent = `R$ ${receitaHoje.toLocaleString('pt-BR')}`;
+      if (elHojeLucro) elHojeLucro.textContent = `R$ ${lucroHoje.toLocaleString('pt-BR')}`;
+
+      // Função auxiliar de projeção biológica e financeira
+      function projetarCenario(dias) {
+        const pesoProj = +(pesoHoje + (gmd * dias)).toFixed(1);
+        const sobrevivenciaFator = Math.max(0.90, 1 - (0.0008 * dias));
+        const ganhoRelativo = pesoProj / pesoHoje;
+        const biomassaProj = Math.round(biomassaHoje * ganhoRelativo * sobrevivenciaFator);
+
+        // Preço projetado baseado na valorização de faixa ABCC
+        const cotacaoBaseNova = interpolarPrecoABCC(pesoProj);
+        const cotacaoBaseAtual = interpolarPrecoABCC(pesoHoje);
+        const precoVendaProj = +(precoVendaAtual * (cotacaoBaseNova / cotacaoBaseAtual)).toFixed(2);
+
+        // Consumo de ração estimado no período
+        const racaoExtraKg = Math.round(racaoHojeDia * dias * (1 + ((gmd * dias) / (2 * pesoHoje))));
+        const custoExtraRacao = racaoExtraKg * precoRacao;
+        const custoExtraOps = custoDiario * dias;
+        const custoExtraTotal = Math.round(custoExtraRacao + custoExtraOps);
+
+        const novaReceita = Math.round(biomassaProj * precoVendaProj);
+        const novoLucro = lucroHoje + (novaReceita - receitaHoje) - custoExtraTotal;
+        const deltaLucro = (novaReceita - receitaHoje) - custoExtraTotal;
+
+        return {
+          dias,
+          pesoProj,
+          biomassaProj,
+          precoVendaProj,
+          racaoExtraKg,
+          custoExtraTotal,
+          novaReceita,
+          novoLucro,
+          deltaLucro
+        };
+      }
+
+      // Projeções fixas
+      const c7 = projetarCenario(7);
+      const c14 = projetarCenario(14);
+
+      // Preenche Cenário +7d
+      const el7Peso = document.getElementById('sim-cen-7d-peso');
+      const el7Biomassa = document.getElementById('sim-cen-7d-biomassa');
+      const el7Custo = document.getElementById('sim-cen-7d-custo-extra');
+      const el7Receita = document.getElementById('sim-cen-7d-receita');
+      const el7Delta = document.getElementById('sim-cen-7d-delta');
+
+      if (el7Peso) el7Peso.textContent = `${c7.pesoProj} g (+${(c7.pesoProj - pesoHoje).toFixed(1)}g)`;
+      if (el7Biomassa) el7Biomassa.textContent = `${c7.biomassaProj.toLocaleString('pt-BR')} kg`;
+      if (el7Custo) el7Custo.textContent = `R$ ${c7.custoExtraTotal.toLocaleString('pt-BR')}`;
+      if (el7Receita) el7Receita.textContent = `R$ ${c7.novaReceita.toLocaleString('pt-BR')}`;
+      if (el7Delta) {
+        const sinal = c7.deltaLucro >= 0 ? '+' : '';
+        el7Delta.textContent = `${sinal}R$ ${c7.deltaLucro.toLocaleString('pt-BR')}`;
+        el7Delta.className = c7.deltaLucro >= 0 ? 'text-base font-black text-emerald-600 font-mono' : 'text-base font-black text-rose-600 font-mono';
+      }
+
+      // Preenche Cenário +14d
+      const el14Peso = document.getElementById('sim-cen-14d-peso');
+      const el14Biomassa = document.getElementById('sim-cen-14d-biomassa');
+      const el14Custo = document.getElementById('sim-cen-14d-custo-extra');
+      const el14Receita = document.getElementById('sim-cen-14d-receita');
+      const el14Delta = document.getElementById('sim-cen-14d-delta');
+
+      if (el14Peso) el14Peso.textContent = `${c14.pesoProj} g (+${(c14.pesoProj - pesoHoje).toFixed(1)}g)`;
+      if (el14Biomassa) el14Biomassa.textContent = `${c14.biomassaProj.toLocaleString('pt-BR')} kg`;
+      if (el14Custo) el14Custo.textContent = `R$ ${c14.custoExtraTotal.toLocaleString('pt-BR')}`;
+      if (el14Receita) el14Receita.textContent = `R$ ${c14.novaReceita.toLocaleString('pt-BR')}`;
+      if (el14Delta) {
+        const sinal = c14.deltaLucro >= 0 ? '+' : '';
+        el14Delta.textContent = `${sinal}R$ ${c14.deltaLucro.toLocaleString('pt-BR')}`;
+        el14Delta.className = c14.deltaLucro >= 0 ? 'text-base font-black text-emerald-600 font-mono' : 'text-base font-black text-rose-600 font-mono';
+      }
+
+      // --- Veredito Inteligente ---
+      const elVerCard = document.getElementById('sim-veredito-card');
+      const elVerIcon = document.getElementById('sim-veredito-icon');
+      const elVerTit = document.getElementById('sim-veredito-titulo');
+      const elVerTag = document.getElementById('sim-veredito-tag');
+      const elVerTxt = document.getElementById('sim-veredito-texto');
+
+      if (c7.deltaLucro > 500) {
+        if (elVerCard) elVerCard.className = 'rounded-xl p-4 border flex items-start gap-3.5 bg-emerald-50 border-emerald-200 text-emerald-950';
+        if (elVerIcon) elVerIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600"></i>';
+        if (elVerTit) elVerTit.textContent = 'RECOMENDAÇÃO: VALE A PENA SEGURAR +7 DIAS';
+        if (elVerTag) {
+          elVerTag.className = 'text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-900';
+          elVerTag.textContent = '🟢 Ganho Líquido Positivo';
+        }
+        if (elVerTxt) {
+          elVerTxt.textContent = `O ganho de peso projetado (+${(c7.pesoProj - pesoHoje).toFixed(1)}g) elevará a biomassa para ${c7.biomassaProj.toLocaleString('pt-BR')} kg e o preço estimado para R$ ${c7.precoVendaProj.toFixed(2).replace('.', ',')}/kg. Essa valorização cobrirá com folga os R$ ${c7.custoExtraTotal.toLocaleString('pt-BR')} de ração e energia, gerando um ganho adicional líquido de R$ ${c7.deltaLucro.toLocaleString('pt-BR')}.`;
+        }
+      } else if (c7.deltaLucro >= -200) {
+        if (elVerCard) elVerCard.className = 'rounded-xl p-4 border flex items-start gap-3.5 bg-amber-50 border-amber-200 text-amber-950';
+        if (elVerIcon) elVerIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-600"></i>';
+        if (elVerTit) elVerTit.textContent = 'RECOMENDAÇÃO: ZONA NEUTRA / RISCO DE ESTAGNAÇÃO';
+        if (elVerTag) {
+          elVerTag.className = 'text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900';
+          elVerTag.textContent = '🟡 Retorno Limítrofe';
+        }
+        if (elVerTxt) {
+          elVerTxt.textContent = `O ganho marginal de R$ ${c7.deltaLucro.toLocaleString('pt-BR')} mal cobre os riscos biológicos de oxigênio e clima. Caso os aeradores estejam operando em capacidade máxima ou haja oscilação de amônia, prefira agendar a despesca nesta semana.`;
+        }
+      } else {
+        if (elVerCard) elVerCard.className = 'rounded-xl p-4 border flex items-start gap-3.5 bg-rose-50 border-rose-200 text-rose-950';
+        if (elVerIcon) elVerIcon.innerHTML = '<i class="fa-solid fa-circle-exclamation text-rose-600"></i>';
+        if (elVerTit) elVerTit.textContent = 'RECOMENDAÇÃO: DESPESCA IMEDIATA SUGERIDA';
+        if (elVerTag) {
+          elVerTag.className = 'text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-rose-200 text-rose-900';
+          elVerTag.textContent = '🔴 Ração Supera Ganho';
+        }
+        if (elVerTxt) {
+          elVerTxt.textContent = `Na gramatura atual (${pesoHoje}g), o custo semanal de ração e operação (R$ ${c7.custoExtraTotal.toLocaleString('pt-BR')}) supera o acréscimo de receita gerado pelo camarão em R$ ${Math.abs(c7.deltaLucro).toLocaleString('pt-BR')}. Segurar o tanque gerará prejuízo operacional marginal.`;
+        }
+      }
+
+      // Projeção do Slider Personalizado
+      const cCustom = projetarCenario(diasExtras);
+      const elResPeso = document.getElementById('sim-res-peso');
+      const elResBiomassa = document.getElementById('sim-res-biomassa');
+      const elResCustoExtra = document.getElementById('sim-res-custo-extra');
+      const elResLucro = document.getElementById('sim-res-lucro');
+
+      if (elResPeso) elResPeso.textContent = `${cCustom.pesoProj} g`;
+      if (elResBiomassa) elResBiomassa.textContent = `${cCustom.biomassaProj.toLocaleString('pt-BR')} kg`;
+      if (elResCustoExtra) elResCustoExtra.textContent = `R$ ${cCustom.custoExtraTotal.toLocaleString('pt-BR')}`;
+      if (elResLucro) elResLucro.textContent = `R$ ${cCustom.novoLucro.toLocaleString('pt-BR')}`;
+    }
+
+    function atualizarSliderDespesca(val) {
+      const dias = parseInt(val) || 0;
+      const elVal = document.getElementById('sim-slider-dias-val');
+      if (elVal) elVal.textContent = dias;
+
+      const elData = document.getElementById('sim-slider-data-projetada');
+      if (elData) {
+        const d = new Date();
+        d.setDate(d.getDate() + dias);
+        const dataFmt = d.toLocaleDateString('pt-BR');
+        elData.textContent = `(Colheita prevista em ${dataFmt})`;
+      }
+
+      recalcularSimuladorDespesca();
+    }
+
     // ========================================================
     // RENDERIZADOR DO MÓDULO DE DESPESCA & VENDAS
     // ========================================================
@@ -11599,6 +12246,7 @@
 
       // 3. Renderizar Gráficos de Despesca
       renderizarGraficosDespesca();
+      inicializarSimuladorDespesca();
     }
 
     function renderizarGraficosDespescas() {
