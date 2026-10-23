@@ -2,6 +2,7 @@
 from datetime import date, timedelta
 from sqlalchemy.orm import Session
 from app.core.database import Base, engine, SessionLocal
+import app.models  # Garante o registro de todos os modelos ORM no Base.metadata
 from app.models.fazenda import Fazenda
 from app.models.viveiro import Viveiro
 from app.models.funcionario import Funcionario, EscalaTrabalho

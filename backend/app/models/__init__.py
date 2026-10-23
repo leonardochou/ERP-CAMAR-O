@@ -9,6 +9,7 @@ from app.models.biometria import Biometria
 from app.models.despesca import DespescaVenda
 from app.models.auditoria import AuditoriaPendencia
 from app.models.funcionario import Funcionario, EscalaTrabalho
+from app.models.contabilidade import LancamentoContabil, LogBackupContabil
 
 __all__ = [
     "Base",
@@ -22,4 +23,6 @@ __all__ = [
     "AuditoriaPendencia",
     "Funcionario",
     "EscalaTrabalho",
+    "LancamentoContabil",
+    "LogBackupContabil",
 ]

@@ -28,6 +28,9 @@ def sincronizar_modelos_drive(
     caminho_agua = (
         DIRETORIO_MODELOS_LOCAL / "Controle de qualidade de agua" / "Controle_Qualidade_Agua.xlsx"
     )
+    caminho_contabil = (
+        DIRETORIO_MODELOS_LOCAL / "Registro de custos e contas" / "Registro_de_Custos_e_Contas.xlsx"
+    )
 
     resultados = {
         "status": "sucesso",
@@ -62,6 +65,20 @@ def sincronizar_modelos_drive(
         resultados["arquivos_processados"]["qualidade_agua"] = {
             "status": "erro",
             "detalhes": f"Arquivo não encontrado em {caminho_agua}"
+        }
+
+    if caminho_contabil.exists():
+        res_cont = IngestorService.processar_planilha_contabil(
+            db=db,
+            arquivo_ou_caminho=caminho_contabil,
+            fazenda_id=fazenda.id,
+            fazenda_codigo=fazenda.codigo
+        )
+        resultados["arquivos_processados"]["contabilidade"] = res_cont
+    else:
+        resultados["arquivos_processados"]["contabilidade"] = {
+            "status": "erro",
+            "detalhes": f"Arquivo não encontrado em {caminho_contabil}"
         }
 
     return resultados

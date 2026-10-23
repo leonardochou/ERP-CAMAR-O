@@ -18,7 +18,14 @@ class CicloCultivo(Base):
     densidade_pl_m2 = Column(Float, nullable=True)   # pls_estocadas / area_m2
     laboratorio = Column(String(50), nullable=True)  # ex: AQUATEC, NE, tecmaris
     peso_inicial_g = Column(Float, default=0.01)     # Padrão 0.01g
-    status = Column(String(30), default="EM CULTIVO ATIVO", index=True)  # EM PREPARACAO, EM CULTIVO ATIVO, DESPESCADO
+    status = Column(String(30), default="EM CULTIVO ATIVO", index=True)  # EM PREPARACAO, EM CULTIVO ATIVO, DESPESCA_PARCIAL, DESPESCADO, ENCERRADO
+
+    # Identificação Oficial e Sequencial da Safra
+    codigo_ciclo = Column(String(50), nullable=True, index=True)  # ex: V-01 • Ciclo 2026.1
+    ano_safra = Column(Integer, nullable=True, index=True)        # ex: 2026
+    numero_sequencial = Column(Integer, default=1)                # 1, 2, 3...
+    racao_total_kg = Column(Float, default=0.0)
+    despescas_parciais_kg = Column(Float, default=0.0)
 
     # Métricas de Fechamento de Safra (Despesca)
     data_despesca = Column(Date, nullable=True)

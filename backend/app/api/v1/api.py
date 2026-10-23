@@ -14,6 +14,7 @@ from app.api.v1.endpoints import (
     relatorios,
     ingestao,
     equipe,
+    contabilidade,
 )
 
 api_router = APIRouter()
@@ -30,3 +31,4 @@ api_router.include_router(whatsapp.router, prefix="/whatsapp", tags=["Assistente
 api_router.include_router(relatorios.router, prefix="/relatorios", tags=["Relatórios & Dashboards"])
 api_router.include_router(ingestao.router, prefix="/ingestao", tags=["Ingestão & Sincronização"])
 api_router.include_router(equipe.router, prefix="/equipe", tags=["Equipe & Vigia Noturno"])
+api_router.include_router(contabilidade.router, prefix="/contabilidade", tags=["Hub Contábil, DRE & Fluxo de Caixa"])
