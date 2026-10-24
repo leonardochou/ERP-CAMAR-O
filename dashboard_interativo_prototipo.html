@@ -8764,15 +8764,16 @@
             }
 
             // ----------------------------------------------------
-            // Leitura dos Lançamentos Diários (Linha 11 em diante, ou 10 legado)
+            // Leitura dos Lançamentos Diários (Detecção Dinâmica do Cabeçalho)
             // ----------------------------------------------------
-            let rowStartTratos = 10; // Linha 11 (índice 0-based 10)
-            const txtA10 = extrairTextoLimpo(ws, 'A10').toUpperCase();
-            const txtA9 = extrairTextoLimpo(ws, 'A9').toUpperCase();
-            if (txtA10.includes('DATA') || txtA10.includes('DOC') || txtA10.includes('DIA')) {
-              rowStartTratos = 10;
-            } else if (txtA9.includes('DATA') || txtA9.includes('DOC') || txtA9.includes('DIA')) {
-              rowStartTratos = 9;
+            let rowStartTratos = 9; // Índice 0-based 9 = Linha 10 do Excel (novo padrão sem legenda)
+            for (let r_chk = 7; r_chk <= 11; r_chk++) {
+              const txtC0 = extrairTextoLimpo(ws, XLSX.utils.encode_cell({ r: r_chk, c: 0 })).toUpperCase();
+              const txtC1 = extrairTextoLimpo(ws, XLSX.utils.encode_cell({ r: r_chk, c: 1 })).toUpperCase();
+              if (txtC0 === 'DATA' || txtC1.includes('DOC') || txtC0.includes('DATA')) {
+                rowStartTratos = r_chk + 1; // Primeira linha de dados diários após o cabeçalho
+                break;
+              }
             }
 
             let tratosViveiro = [];
