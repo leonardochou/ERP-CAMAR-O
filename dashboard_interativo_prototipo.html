@@ -1716,26 +1716,45 @@
           </button>
         </div>
 
+        <!-- Alerta de Ponto Crítico de Reposição (renderizado dinamicamente se autonomia <= 7 dias) -->
+        <div id="estoque-banner-alerta-critico" class="hidden p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 shadow-sm flex items-start gap-3.5">
+          <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg flex-shrink-0">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div class="space-y-0.5">
+            <h4 class="text-sm font-extrabold text-amber-900" id="estoque-alerta-titulo">Atenção: Ponto de Reposição Crítico de Ração!</h4>
+            <p class="text-xs text-amber-800" id="estoque-alerta-descricao">O saldo físico atual no galpão é suficiente para menos de 7 dias com base no arraçoamento médio dos viveiros. Providencie pedido de compra imediatamente.</p>
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <span class="text-xs font-bold text-slate-500 uppercase">Saldo Físico Galpão</span>
-            <div class="text-3xl font-extrabold text-slate-800 mt-1">380 sacos</div>
-            <span class="text-[11px] text-slate-500 mt-1">9.500 kg totais</span>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+            <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-boxes-stacked text-orange-500"></i> Saldo Físico Galpão
+            </span>
+            <div class="text-3xl font-extrabold text-slate-800 font-mono" id="estoque-saldo-sacos">400 sacos</div>
+            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-saldo-kg">10.000 kg totais</div>
           </div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <span class="text-xs font-bold text-slate-500 uppercase">Autonomia Estimada</span>
-            <div class="text-2xl font-extrabold text-emerald-600 mt-1">14 dias</div>
-            <span class="text-[11px] text-slate-500 mt-1">Consumo de 27.4 sacos/dia</span>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+            <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-calendar-day text-emerald-500"></i> Autonomia Estimada
+            </span>
+            <div class="text-2xl font-extrabold text-emerald-600 font-mono" id="estoque-autonomia-dias">-- dias</div>
+            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-consumo-diario">Consumo: -- kg/dia</div>
           </div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <span class="text-xs font-bold text-slate-500 uppercase">Ponto de Reposição</span>
-            <div class="text-2xl font-extrabold text-amber-600 mt-1">7 dias (190 sacos)</div>
-            <span class="text-[11px] text-amber-700 font-semibold mt-1">Previsão de pedido: em 7 dias</span>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+            <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-bell text-amber-500"></i> Ponto de Reposição
+            </span>
+            <div class="text-2xl font-extrabold text-amber-600 font-mono" id="estoque-ponto-reposicao">7 dias (140 sacos)</div>
+            <div class="text-[11px] text-amber-700 font-semibold" id="estoque-previsao-pedido">Previsão: normal</div>
           </div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <span class="text-xs font-bold text-slate-500 uppercase">Valor em Estoque</span>
-            <div class="text-2xl font-extrabold text-slate-800 mt-1">R$ 53.200,00</div>
-            <span class="text-[11px] text-slate-500 mt-1">Preço médio R$ 140/saco</span>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+            <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-sack-dollar text-indigo-500"></i> Valor em Estoque
+            </span>
+            <div class="text-2xl font-extrabold text-slate-800 font-mono" id="estoque-valor-total">R$ 56.000,00</div>
+            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-preco-medio">Preço médio R$ 5,60/kg</div>
           </div>
         </div>
 
@@ -1745,7 +1764,7 @@
             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
               <i class="fa-solid fa-warehouse text-aco"></i> Lotes e Tipos de Ração em Estoque
             </h3>
-            <span class="text-xs text-slate-500">Última contagem física: 20/10/2026</span>
+            <span class="text-xs text-slate-500" id="estoque-data-atualizacao">Abatido pelo Arraçoamento da Biometria</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-700">
@@ -1762,51 +1781,8 @@
                   <th class="p-3">Status</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100 font-medium">
-                <tr class="hover:bg-slate-50">
-                  <td class="p-3 font-bold text-slate-900">Guabi Nutrimar Engorda</td>
-                  <td class="p-3">35% PB</td>
-                  <td class="p-3">1.6 mm</td>
-                  <td class="p-3 font-extrabold text-slate-800">180</td>
-                  <td class="p-3">4.500 kg</td>
-                  <td class="p-3 text-emerald-600 font-bold">7.5 dias</td>
-                  <td class="p-3 font-mono">GB-26-881</td>
-                  <td class="p-3">15/01/2027</td>
-                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Normal</span></td>
-                </tr>
-                <tr class="hover:bg-slate-50">
-                  <td class="p-3 font-bold text-slate-900">Presence Camarão Crescimento</td>
-                  <td class="p-3">35% PB</td>
-                  <td class="p-3">1.4 mm</td>
-                  <td class="p-3 font-extrabold text-slate-800">120</td>
-                  <td class="p-3">3.000 kg</td>
-                  <td class="p-3 text-emerald-600 font-bold">5.0 dias</td>
-                  <td class="p-3 font-mono">PR-26-402</td>
-                  <td class="p-3">28/02/2027</td>
-                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Normal</span></td>
-                </tr>
-                <tr class="hover:bg-slate-50">
-                  <td class="p-3 font-bold text-slate-900">Guabi Inicial Micropeletizada</td>
-                  <td class="p-3">40% PB</td>
-                  <td class="p-3">0.8 - 1.0 mm</td>
-                  <td class="p-3 font-extrabold text-slate-800">50</td>
-                  <td class="p-3">1.250 kg</td>
-                  <td class="p-3 text-emerald-600 font-bold">25 dias</td>
-                  <td class="p-3 font-mono">GB-26-109</td>
-                  <td class="p-3">10/03/2027</td>
-                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Normal</span></td>
-                </tr>
-                <tr class="hover:bg-slate-50">
-                  <td class="p-3 font-bold text-slate-900">Ração Berçário Pó / PL</td>
-                  <td class="p-3">45% PB</td>
-                  <td class="p-3">Micro (Pó)</td>
-                  <td class="p-3 font-extrabold text-amber-700">30</td>
-                  <td class="p-3">750 kg</td>
-                  <td class="p-3 text-amber-700 font-bold">15 dias</td>
-                  <td class="p-3 font-mono">BC-26-044</td>
-                  <td class="p-3">05/12/2026</td>
-                  <td class="p-3"><span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px]">Ponto Atenção</span></td>
-                </tr>
+              <tbody id="tbody-estoque-lotes" class="divide-y divide-slate-100 font-medium">
+                <!-- Populado dinamicamente via renderizarModuloEstoque() -->
               </tbody>
             </table>
           </div>
@@ -3680,6 +3656,50 @@
           </div>
         </div>
 
+        <!-- PAINEL EM TEMPO REAL: TANQUES EM CULTIVO ATIVO & PROJEÇÕES DE COLHEITA -->
+        <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm space-y-4">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-emerald-100 text-emerald-800">
+                  <i class="fa-solid fa-satellite-dish text-emerald-600"></i> Monitoramento Ativo em Tempo Real
+                </span>
+                <span class="text-xs text-slate-400">•</span>
+                <span class="text-xs text-slate-500 font-semibold" id="despesca-tanques-ativos-contador">0 tanques em engorda</span>
+              </div>
+              <h3 class="text-base font-black text-slate-900 mt-1 flex items-center gap-2">
+                Tanques em Cultivo Ativo — Biomassa Atual & Projeções de Despesca (14g e 18g)
+              </h3>
+              <p class="text-xs text-slate-500">
+                Identificação dinâmica baseada nas biometrias do campo. Calcula a data estimada de alcance das gramaturas comerciais e conecta diretamente ao Simulador Ótimo.
+              </p>
+            </div>
+            <button onclick="renderizarModuloDespesca()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center gap-1.5 border border-slate-200">
+              <i class="fa-solid fa-arrows-rotate"></i> Atualizar Projeções
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+              <thead class="bg-slate-50 text-slate-600 font-bold uppercase text-[10px] tracking-wider border-b border-slate-200">
+                <tr>
+                  <th class="p-3">Tanque</th>
+                  <th class="p-3">DOC Atual</th>
+                  <th class="p-3">Gramatura Atual</th>
+                  <th class="p-3">GMD Semanal</th>
+                  <th class="p-3">Biomassa Estimada</th>
+                  <th class="p-3 bg-amber-50/60 text-amber-900">Alvo 14g (Comercial)</th>
+                  <th class="p-3 bg-indigo-50/60 text-indigo-900">Alvo 18g (Premium)</th>
+                  <th class="p-3 text-center">Decisão Zootécnica</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-tanques-ativos-projecoes" class="divide-y divide-slate-100 font-medium">
+                <!-- Populado dinamicamente via renderizarModuloDespesca() -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <!-- [SUG-01] SIMULADOR DE DESPESCA ÓTIMA & DECISÃO ZOOTÉCNICA -->
         <div id="painel-simulador-despesca" class="bg-white rounded-2xl p-5 border border-indigo-100 shadow-sm space-y-5">
           <!-- Topo do Simulador -->
@@ -4486,6 +4506,7 @@
         atualizarHeaderNavegacao('Alimentação & Sobras de Bandejas', 'Início > Zootecnia > Ração');
       } else if (viewId === 'analytics-estoque') {
         atualizarHeaderNavegacao('Estoque de Ração & Insumos', 'Início > Suprimentos > Galpão');
+        renderizarModuloEstoque();
       } else if (viewId === 'analytics-agua') {
         atualizarHeaderNavegacao('Qualidade da Água & Parâmetros', 'Início > Zootecnia > Água');
       } else if (viewId === 'auditoria-central') {
@@ -8392,6 +8413,8 @@
               const fcaVal = extrairNumeroLimpo(wsH, XLSX.utils.encode_cell({ r: r, c: 11 })) || 1.25;
               const precoVenda = extrairNumeroLimpo(wsH, XLSX.utils.encode_cell({ r: r, c: 13 })) || 22.0;
               const faturamento = extrairNumeroLimpo(wsH, XLSX.utils.encode_cell({ r: r, c: 14 })) || (kgColh * precoVenda);
+              const compradorHist = extrairTextoLimpo(wsH, XLSX.utils.encode_cell({ r: r, c: 15 }));
+              const obsHist = extrairTextoLimpo(wsH, XLSX.utils.encode_cell({ r: r, c: 16 }));
 
               if (kgColh > 0) {
                 const jaExiste = HISTORICO_SAFRAS_DATA.some(s => s.safraId === safraId);
@@ -8414,8 +8437,8 @@
                     fcaReal: fcaVal,
                     precoVendaKg: precoVenda,
                     faturamentoBruto: faturamento,
-                    comprador: 'Mercado Regional',
-                    obs: 'Importado de Historico_Safras'
+                    comprador: compradorHist || 'Mercado Regional',
+                    obs: obsHist || 'Importado de Historico_Safras'
                   });
                 }
               }
@@ -8454,6 +8477,7 @@
             const kgDespParc = extrairNumeroLimpo(ws, 'D5');
             const pesoDespParc = extrairNumeroLimpo(ws, 'F5');
             const precoDespParc = extrairNumeroLimpo(ws, 'J5') || extrairNumeroLimpo(ws, 'I5') || 22.0;
+            const compradorDespParc = extrairTextoLimpo(ws, 'M5') || extrairTextoLimpo(ws, 'L5');
 
             let despParcialObj = null;
             if (kgDespParc > 0 || dataDespParc) {
@@ -8461,7 +8485,8 @@
                 data: dataDespParc || '-',
                 kg_colhido: kgDespParc,
                 peso_final_g: pesoDespParc,
-                preco_kg: precoDespParc
+                preco_kg: precoDespParc,
+                comprador: compradorDespParc || 'Mercado Regional'
               };
             }
 
@@ -8472,6 +8497,7 @@
             const sobDespFinal = extrairNumeroLimpo(ws, 'H6');
             const precoDespFinal = extrairNumeroLimpo(ws, 'J6') || extrairNumeroLimpo(ws, 'I6') || 22.0;
             const fcaDespFinal = extrairNumeroLimpo(ws, 'K6');
+            const compradorDespFinal = extrairTextoLimpo(ws, 'M6') || extrairTextoLimpo(ws, 'L6');
 
             let despFinalObj = null;
             if (kgDespFinal > 0 || dataDespFinal) {
@@ -8483,7 +8509,8 @@
                 sobrevivencia_pct: sobDespFinal || 65.0,
                 fca_real: fcaDespFinal || 1.25,
                 preco_venda_kg: precoDespFinal,
-                obs: `Despesca oficial registrada na planilha`
+                comprador: compradorDespFinal || 'Mercado Regional',
+                obs: `Despesca oficial registrada na planilha. Comprador: ${compradorDespFinal || 'Mercado Regional'}`
               };
             }
 
@@ -8591,7 +8618,7 @@
                   fcaReal: despFinalObj.fca_real,
                   precoVendaKg: despFinalObj.preco_venda_kg || 22.0,
                   faturamentoBruto: despFinalObj.kg_colhido * (despFinalObj.preco_venda_kg || 22.0),
-                  comprador: 'Mercado Regional',
+                  comprador: despFinalObj.comprador || 'Mercado Regional',
                   obs: despFinalObj.obs
                 });
               }
@@ -8627,6 +8654,7 @@
           preencherTabelasAnaliticas();
           if (typeof renderizarModuloCiclos === 'function') renderizarModuloCiclos();
           if (typeof renderizarModuloDespesca === 'function') renderizarModuloDespesca();
+          if (typeof renderizarModuloEstoque === 'function') renderizarModuloEstoque();
 
           const relatorio = {
             novos_lancamentos: totalTratosLidos,
@@ -9228,6 +9256,183 @@
     // ========================================================
     // RENDERIZADOR DO MÓDULO DE DESPESCA & VENDAS
     // ========================================================
+    
+    // ========================================================
+    // RENDERIZADOR DO MÓDULO DE ESTOQUE DINÂMICO
+    // (Abate em tempo real pela biometria & arraçoamento)
+    // ========================================================
+    function renderizarModuloEstoque() {
+      // 1. Saldo inicial configurado (padrão fazenda: 400 sacos de 25kg = 10.000 kg)
+      let saldoBaseKg = 10000.0;
+      
+      // 2. Entradas Contábeis (Compras registradas na conta 3.1.01 ou similares)
+      let comprasKg = 0.0;
+      let totalGastoRacaoRs = 0.0;
+      if (typeof LANCAMENTOS_CONTABEIS_DATA !== 'undefined' && Array.isArray(LANCAMENTOS_CONTABEIS_DATA)) {
+        LANCAMENTOS_CONTABEIS_DATA.forEach(lanc => {
+          const cod = String(lanc.contaCodigo || lanc.conta || '');
+          const desc = String(lanc.descricao || lanc.historico || '').toLowerCase();
+          if (cod.startsWith('3.1.01') || desc.includes('ração') || desc.includes('racao') || desc.includes('guabi') || desc.includes('presence')) {
+            const v = Math.abs(Number(lanc.valorDebito || lanc.valor || 0));
+            totalGastoRacaoRs += v;
+            comprasKg += (lanc.quantidadeKg || (v / 5.60));
+          }
+        });
+      }
+
+      // 3. Consumo Total de Ração Abatido da Biometria
+      let consumoTotalKg = 0.0;
+      let consumoDiarioRecenteKg = 0.0;
+      let tanquesAtivosCount = 0;
+
+      if (typeof CICLOS_DATABASE !== 'undefined' && Object.keys(CICLOS_DATABASE).length > 0) {
+        Object.values(CICLOS_DATABASE).forEach(c => {
+          if (c.tratos && Array.isArray(c.tratos)) {
+            c.tratos.forEach(t => {
+              consumoTotalKg += (Number(t.totalDia) || 0);
+            });
+            if (c.statusLote !== 'DESPESCADO' && c.tratos.length > 0) {
+              const ultTrato = c.tratos[c.tratos.length - 1];
+              consumoDiarioRecenteKg += (Number(ultTrato.totalDia) || 0);
+              tanquesAtivosCount++;
+            }
+          }
+        });
+      } else if (typeof VIVEIROS_DATA !== 'undefined' && Array.isArray(VIVEIROS_DATA)) {
+        VIVEIROS_DATA.forEach(v => {
+          consumoTotalKg += (Number(v.racaoTotalKg) || 0);
+          if (v.biomassaKg > 0) {
+            consumoDiarioRecenteKg += (Number(v.racaoHojeKg) || (v.racaoTotalKg / Math.max(1, v.ddc || 1)));
+            tanquesAtivosCount++;
+          }
+        });
+      }
+
+      if (consumoDiarioRecenteKg <= 0 && tanquesAtivosCount > 0) {
+        consumoDiarioRecenteKg = tanquesAtivosCount * 25.0;
+      } else if (consumoDiarioRecenteKg <= 0) {
+        consumoDiarioRecenteKg = 150.0;
+      }
+
+      // 4. Saldo Físico Real no Galpão
+      const saldoFisicoKg = Math.max(0, saldoBaseKg + comprasKg - consumoTotalKg);
+      const saldoSacos = Math.round(saldoFisicoKg / 25.0);
+      const consumoSacosDia = (consumoDiarioRecenteKg / 25.0).toFixed(1);
+      const autonomiaDias = consumoDiarioRecenteKg > 0 ? (saldoFisicoKg / consumoDiarioRecenteKg).toFixed(1) : '99';
+      const autonomiaNum = parseFloat(autonomiaDias);
+
+      const reposicaoKg = consumoDiarioRecenteKg * 7;
+      const reposicaoSacos = Math.round(reposicaoKg / 25.0);
+      const precoMedioKg = 5.60;
+      const valorEstoqueRs = saldoFisicoKg * precoMedioKg;
+
+      // 5. Atualizar os 4 Cards
+      const elSaldoSacos = document.getElementById('estoque-saldo-sacos');
+      const elSaldoKg = document.getElementById('estoque-saldo-kg');
+      const elAutonomia = document.getElementById('estoque-autonomia-dias');
+      const elConsumo = document.getElementById('estoque-consumo-diario');
+      const elPontoRep = document.getElementById('estoque-ponto-reposicao');
+      const elPrevisao = document.getElementById('estoque-previsao-pedido');
+      const elValorTotal = document.getElementById('estoque-valor-total');
+      const elPrecoMedio = document.getElementById('estoque-preco-medio');
+      const elDataAtu = document.getElementById('estoque-data-atualizacao');
+      const elBanner = document.getElementById('estoque-banner-alerta-critico');
+
+      if (elSaldoSacos) elSaldoSacos.innerText = `${saldoSacos.toLocaleString('pt-BR')} sacos`;
+      if (elSaldoKg) elSaldoKg.innerText = `${Math.round(saldoFisicoKg).toLocaleString('pt-BR')} kg totais`;
+      if (elAutonomia) {
+        elAutonomia.innerText = `${autonomiaDias} dias`;
+        elAutonomia.className = autonomiaNum <= 7.0 ? 'text-2xl font-extrabold text-rose-600 font-mono' : 'text-2xl font-extrabold text-emerald-600 font-mono';
+      }
+      if (elConsumo) elConsumo.innerText = `Consumo: ${Math.round(consumoDiarioRecenteKg)} kg/dia (${consumoSacosDia} sacos/dia)`;
+      if (elPontoRep) elPontoRep.innerText = `7 dias (${reposicaoSacos} sacos)`;
+      if (elPrevisao) {
+        if (autonomiaNum <= 7.0) {
+          elPrevisao.innerText = '🚨 Reposição Imediata Necessária!';
+          elPrevisao.className = 'text-[11px] text-rose-700 font-extrabold mt-1';
+        } else {
+          const diasAtePedido = Math.max(0, Math.round(autonomiaNum - 7));
+          elPrevisao.innerText = `Previsão de pedido: em ~${diasAtePedido} dias`;
+          elPrevisao.className = 'text-[11px] text-amber-700 font-semibold mt-1';
+        }
+      }
+      if (elValorTotal) elValorTotal.innerText = `R$ ${Math.round(valorEstoqueRs).toLocaleString('pt-BR')},00`;
+      if (elPrecoMedio) elPrecoMedio.innerText = `Preço médio R$ ${precoMedioKg.toFixed(2).replace('.', ',')}/kg`;
+      if (elDataAtu) elDataAtu.innerText = `Sincronizado: ${new Date().toLocaleDateString('pt-BR')} • Abatido por ${Math.round(consumoTotalKg).toLocaleString('pt-BR')} kg de biometria`;
+
+      if (elBanner) {
+        if (autonomiaNum <= 7.0 && saldoFisicoKg > 0) {
+          elBanner.classList.remove('hidden');
+          const elDesc = document.getElementById('estoque-alerta-descricao');
+          if (elDesc) elDesc.innerText = `O saldo físico atual no galpão (${saldoSacos} sacos / ${Math.round(saldoFisicoKg)} kg) é suficiente para apenas ${autonomiaDias} dias com o arraçoamento atual (${Math.round(consumoDiarioRecenteKg)} kg/dia). Providencie pedido de compra imediatamente para evitar falta de ração!`;
+        } else {
+          elBanner.classList.add('hidden');
+        }
+      }
+
+      // 6. Preencher Tabela de Lotes de Ração
+      const tbodyLotes = document.getElementById('tbody-estoque-lotes');
+      if (tbodyLotes) {
+        tbodyLotes.innerHTML = '';
+        const lotesConfig = [
+          {
+            produto: 'Guabi Nutrimar Engorda',
+            proteina: '35% PB',
+            granulometria: '1.6 mm',
+            proporcao: 0.60,
+            lote: 'GB-26-881',
+            validade: '15/01/2027'
+          },
+          {
+            produto: 'Presence Camarão Crescimento',
+            proteina: '35% PB',
+            granulometria: '1.4 mm',
+            proporcao: 0.30,
+            lote: 'PR-26-402',
+            validade: '28/02/2027'
+          },
+          {
+            produto: 'Guabi Inicial Micropeletizada',
+            proteina: '40% PB',
+            granulometria: '0.8 - 1.0 mm',
+            proporcao: 0.10,
+            lote: 'GB-26-109',
+            validade: '10/03/2027'
+          }
+        ];
+
+        lotesConfig.forEach(l => {
+          const kgProd = Math.round(saldoFisicoKg * l.proporcao);
+          const sacosProd = Math.round(kgProd / 25.0);
+          const consProdDia = consumoDiarioRecenteKg * l.proporcao;
+          const autProdDias = consProdDia > 0 ? (kgProd / consProdDia).toFixed(1) : '-';
+          const autNumProd = parseFloat(autProdDias);
+
+          let statusBadge = '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Normal</span>';
+          if (autNumProd <= 5.0) {
+            statusBadge = '<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-bold text-[10px]">Crítico</span>';
+          } else if (autNumProd <= 8.0) {
+            statusBadge = '<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px]">Atenção</span>';
+          }
+
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50 transition';
+          tr.innerHTML = `
+            <td class="p-3 font-bold text-slate-900">${l.produto}</td>
+            <td class="p-3">${l.proteina}</td>
+            <td class="p-3">${l.granulometria}</td>
+            <td class="p-3 font-extrabold text-slate-800 font-mono">${sacosProd}</td>
+            <td class="p-3 font-mono">${kgProd.toLocaleString('pt-BR')} kg</td>
+            <td class="p-3 font-bold ${autNumProd <= 7 ? 'text-amber-700' : 'text-emerald-600'}">${autProdDias} dias</td>
+            <td class="p-3 font-mono text-slate-600">${l.lote}</td>
+            <td class="p-3 text-slate-600">${l.validade}</td>
+            <td class="p-3">${statusBadge}</td>
+          `;
+          tbodyLotes.appendChild(tr);
+        });
+      }
+    }
+
     function renderizarModuloDespesca() {
       // 1. Filtrar Safras Concluídas por Período e Safra
       const safrasFiltradas = (HISTORICO_SAFRAS_DATA || []).filter(s => {
@@ -9268,6 +9473,75 @@
       if (elPeso) elPeso.innerText = pesoPond !== '-' ? `${pesoPond} g` : '-';
       if (elCount) elCount.innerText = `${safrasFiltradas.length} safras encerradas`;
 
+      // 1.5. Preencher Painel de Tanques em Cultivo Ativo & Projeções de Colheita
+      const tbodyAtivos = document.getElementById('tbody-tanques-ativos-projecoes');
+      const elContadorAtivos = document.getElementById('despesca-tanques-ativos-contador');
+      
+      const tanquesAtivos = (VIVEIROS_DATA || []).filter(v => (v.biomassaKg > 0 || (v.tratos && v.tratos.length > 0)) && v.statusLote !== 'DESPESCADO');
+      
+      if (elContadorAtivos) {
+        elContadorAtivos.innerText = `${tanquesAtivos.length} tanques em engorda ativa`;
+      }
+      
+      if (tbodyAtivos) {
+        tbodyAtivos.innerHTML = '';
+        if (tanquesAtivos.length === 0) {
+          tbodyAtivos.innerHTML = '<tr><td colspan="8" class="p-5 text-center text-slate-400 italic font-semibold">Nenhum viveiro em cultivo ativo no momento. Ao alimentar dados na planilha de biometria, os viveiros aparecerão aqui com projeções automáticas.</td></tr>';
+        } else {
+          tanquesAtivos.forEach(v => {
+            const pesoAtual = Number(v.pesoMedio) || 12.0;
+            const biomassaAtual = Number(v.biomassaKg) || 0;
+            const ganhoSem = Number(v.ganhoSemanal) || 1.20;
+            const taxaDiaria = Math.max(0.08, ganhoSem / 7.0); // g/dia
+            
+            // Projeção 14g (comercial leve)
+            let badge14 = '';
+            if (pesoAtual >= 14.0) {
+              badge14 = '<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200"><i class="fa-solid fa-circle-check"></i> 14g Atingido</span>';
+            } else {
+              const dias14 = Math.max(1, Math.ceil((14.0 - pesoAtual) / taxaDiaria));
+              const d14 = new Date();
+              d14.setDate(d14.getDate() + dias14);
+              const data14Fmt = d14.toLocaleDateString('pt-BR');
+              badge14 = `<div class="space-y-0.5"><span class="font-extrabold text-amber-900 font-mono text-xs">~${dias14} dias</span><div class="text-[10px] text-slate-500 font-semibold">Previsto: ${data14Fmt}</div></div>`;
+            }
+            
+            // Projeção 18g (premium)
+            let badge18 = '';
+            if (pesoAtual >= 18.0) {
+              badge18 = '<span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-indigo-100 text-indigo-800 border border-indigo-200"><i class="fa-solid fa-crown text-indigo-500"></i> 18g Atingido</span>';
+            } else {
+              const dias18 = Math.max(1, Math.ceil((18.0 - pesoAtual) / taxaDiaria));
+              const d18 = new Date();
+              d18.setDate(d18.getDate() + dias18);
+              const data18Fmt = d18.toLocaleDateString('pt-BR');
+              badge18 = `<div class="space-y-0.5"><span class="font-extrabold text-indigo-950 font-mono text-xs">~${dias18} dias</span><div class="text-[10px] text-slate-500 font-semibold">Previsto: ${data18Fmt}</div></div>`;
+            }
+
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50/80 transition border-b border-slate-100';
+            tr.innerHTML = `
+              <td class="p-3 font-extrabold text-slate-900">
+                <span class="text-indigo-900">${v.id}</span>
+                <span class="ml-1.5 px-1.5 py-0.2 rounded text-[9px] font-bold bg-slate-100 text-slate-700">${v.tipoUso || 'Engorda'}</span>
+              </td>
+              <td class="p-3 font-semibold text-slate-700 font-mono">${v.ddc || 1} dias</td>
+              <td class="p-3 font-extrabold text-slate-900 font-mono text-sm">${pesoAtual.toFixed(1)} g</td>
+              <td class="p-3 font-bold text-teal-700 font-mono">+${ganhoSem.toFixed(2)} g/sem</td>
+              <td class="p-3 font-mono font-black text-slate-800">${biomassaAtual.toLocaleString('pt-BR')} kg</td>
+              <td class="p-3 bg-amber-50/40">${badge14}</td>
+              <td class="p-3 bg-indigo-50/40">${badge18}</td>
+              <td class="p-3 text-center">
+                <button onclick="selecionarViveiroSimulador('${v.id}'); document.getElementById('painel-simulador-despesca').scrollIntoView({ behavior: 'smooth' });" class="px-2.5 py-1 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[10px] transition shadow-xs flex items-center gap-1 mx-auto">
+                  <i class="fa-solid fa-calculator"></i> Simular Ótimo
+                </button>
+              </td>
+            `;
+            tbodyAtivos.appendChild(tr);
+          });
+        }
+      }
+
       // 2. Preencher Tabela de Safras Concluídas
       const tbody = document.getElementById('tbody-despescas-lista');
       if (tbody) {
@@ -9302,7 +9576,11 @@
               </td>
               <td class="p-3 font-mono text-slate-700">R$ ${(s.precoVendaKg || 22.0).toFixed(2)}</td>
               <td class="p-3 font-mono font-black text-emerald-900">R$ ${Math.round(rec).toLocaleString('pt-BR')}</td>
-              <td class="p-3 text-slate-600 font-semibold">${s.comprador || 'Mercado Regional'}</td>
+              <td class="p-3">
+                <span class="px-2.5 py-1 rounded-lg text-[11px] font-bold bg-violet-50 text-violet-800 border border-violet-200 inline-flex items-center gap-1.5">
+                  <i class="fa-solid fa-handshake text-violet-500"></i> ${s.comprador || 'Mercado Regional'}
+                </span>
+              </td>
               <td class="p-3 text-center">
                 <button onclick="event.stopPropagation(); navegarPara('analytics-biomassa'); selecionarViveiroBiomassa('${s.viveiroId}')" class="px-2.5 py-1 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 font-bold text-[10px] border border-indigo-200 transition flex items-center gap-1 mx-auto">
                   <i class="fa-solid fa-eye"></i> Ficha Safra
