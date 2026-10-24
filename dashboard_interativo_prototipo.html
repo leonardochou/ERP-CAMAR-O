@@ -7754,9 +7754,17 @@
         }
 
         let cicloEscolhido = vDados.cicloAtivo || 1;
-        if (!vDados.ciclos[cicloEscolhido]) {
+        const cicloAtualTemDados = vDados.ciclos[cicloEscolhido] && 
+          ((vDados.ciclos[cicloEscolhido].tratos && vDados.ciclos[cicloEscolhido].tratos.length > 0) || 
+           vDados.ciclos[cicloEscolhido].despescaFinal || 
+           vDados.ciclos[cicloEscolhido].despescaParcial);
+
+        if (!cicloAtualTemDados) {
           for (let c = 1; c <= 4; c++) {
-            if (vDados.ciclos[c] && (vDados.ciclos[c].tratos?.length || vDados.ciclos[c].despescaFinal)) {
+            if (vDados.ciclos[c] && 
+               ((vDados.ciclos[c].tratos && vDados.ciclos[c].tratos.length > 0) || 
+                vDados.ciclos[c].despescaFinal || 
+                vDados.ciclos[c].despescaParcial)) {
               cicloEscolhido = c;
               break;
             }
@@ -7946,6 +7954,18 @@
       document.getElementById('detail-bio-viv-id').innerText = vivId;
       document.getElementById('detail-bio-viv-nome').innerText = `${v.nome} (${vivId})`;
       document.getElementById('detail-bio-lote-tag').innerText = `Lote: LOTE-2026-${vivId}`;
+
+      // Sincronizar botões de seleção de ciclo (C1 a C4) com o ciclo ativo do viveiro
+      for (let c = 1; c <= 4; c++) {
+        const btn = document.getElementById(`btn-ciclo-c${c}`);
+        if (btn) {
+          if (c === (dados.cicloAtivo || 1)) {
+            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-white text-slate-900 shadow-sm transition';
+          } else {
+            btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold text-white/80 hover:bg-white/20 transition';
+          }
+        }
+      }
 
       
       const bannerPrep = document.getElementById('detail-bio-banner-preparacao');
@@ -8312,19 +8332,40 @@
       const cell = ws[celulaAddr];
       if (!cell || cell.v === undefined || cell.v === null) return null;
 
+      // 1. Se for objeto Date do JavaScript (gerado pelo SheetJS cellDates: true)
       if (cell.v instanceof Date) {
-        return cell.v.toLocaleDateString('pt-BR');
+        // Usa UTC para evitar deslocamento de 1 dia pelo fuso horário do Brasil (-3h)
+        const d = cell.v.getUTCDate();
+        const m = cell.v.getUTCMonth() + 1;
+        const y = cell.v.getUTCFullYear();
+        return `${String(d).padStart(2, '0')}/${String(m).padStart(2, '0')}/${y}`;
       }
-      if (typeof cell.v === 'number' && cell.v > 30000 && typeof XLSX !== 'undefined') {
+
+      // 2. Se for número serial de data do Excel (> 30000)
+      if (typeof cell.v === 'number' && cell.v > 30000 && typeof XLSX !== 'undefined' && XLSX.SSF) {
         const dObj = XLSX.SSF.parse_date_code(cell.v);
         if (dObj) return `${String(dObj.d).padStart(2, '0')}/${String(dObj.m).padStart(2, '0')}/${dObj.y}`;
       }
-      if (typeof cell.v === 'string') {
-        const str = cell.v.trim();
-        const m = str.match(/(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})/);
-        if (m) {
-          const ano = m[3].length === 2 ? '20' + m[3] : m[3];
-          return `${String(m[1]).padStart(2, '0')}/${String(m[2]).padStart(2, '0')}/${ano}`;
+
+      // 3. Se for texto ou string formatada (cell.w ou cell.v)
+      const valStr = String(cell.w || cell.v || '').trim();
+      if (valStr) {
+        // Formato ISO: YYYY-MM-DD ou YYYY-MM-DD HH:MM:SS
+        const mIso = valStr.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+        if (mIso) {
+          const y = mIso[1];
+          const m = String(parseInt(mIso[2], 10)).padStart(2, '0');
+          const d = String(parseInt(mIso[3], 10)).padStart(2, '0');
+          return `${d}/${m}/${y}`;
+        }
+        // Formato Brasileiro: DD/MM/YYYY ou DD/MM/YY
+        const mBr = valStr.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{2,4})/);
+        if (mBr) {
+          const d = String(parseInt(mBr[1], 10)).padStart(2, '0');
+          const m = String(parseInt(mBr[2], 10)).padStart(2, '0');
+          let y = mBr[3];
+          if (y.length === 2) y = '20' + y;
+          return `${d}/${m}/${y}`;
         }
       }
       return null;
@@ -8633,7 +8674,14 @@
 
           exibirRelatorioImportacao(relatorio);
 
-          if (selectedViveiroIdBiomassa !== 'TODOS') {
+          let primeiroVivAtivo = Object.keys(DADOS_PLANILHA_VIVEIROS).find(k => {
+            const d = DADOS_PLANILHA_VIVEIROS[k];
+            return d && d.tratos && d.tratos.length > 0;
+          });
+
+          if (primeiroVivAtivo) {
+            selecionarViveiroBiomassa(primeiroVivAtivo);
+          } else if (selectedViveiroIdBiomassa !== 'TODOS') {
             selecionarViveiroBiomassa(selectedViveiroIdBiomassa);
           }
 
