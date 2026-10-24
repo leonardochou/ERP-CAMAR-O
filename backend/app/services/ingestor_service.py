@@ -160,8 +160,8 @@ class IngestorService:
             "novidades_por_viveiro": {},
         }
 
-        # Abas que representam viveiros (ex: V-01, V-1, v-1, v4, V-10, etc.)
-        padrao_viveiro = re.compile(r"^V-?(\d{1,2})$", re.IGNORECASE)
+        # Abas que representam viveiros (ex: V-01, V-1, v-1, v4, V-10, e 4 ciclos: V01-C1, V02-C2, etc.)
+        padrao_viveiro = re.compile(r"^V-?(\d{1,2})(?:-C(\d+))?$", re.IGNORECASE)
 
         for sheet_name in wb.sheetnames:
             m_viv = padrao_viveiro.match(sheet_name.strip())
@@ -169,6 +169,7 @@ class IngestorService:
                 continue
 
             num_viv = int(m_viv.group(1))
+            num_ciclo_aba = int(m_viv.group(2)) if m_viv.group(2) else None
             cod_viveiro = f"V-{num_viv:02d}"
             ws = wb[sheet_name]
 
@@ -335,19 +336,41 @@ class IngestorService:
                 if bercario_info and "Berçário" not in (ciclo.observacoes or ""):
                     ciclo.observacoes = (ciclo.observacoes or "") + f" | Berçário: {bercario_info}"
 
-            # Extração de Despesca Prévia (Linha 5 padrão da planilha)
+            # Extração de Despesca Prévia (Linha 6 para 4-ciclos ou Linha 5 padrão)
             despesca_detectada = None
-            val_dt_desp = converter_para_data(ws.cell(5, 2).value)
-            val_colhido = ws.cell(5, 4).value
-            val_peso_final = ws.cell(5, 6).value
+            
+            # Testa se linha 6 é Despesca Final (formato 4-ciclos)
+            val_dt_desp6 = converter_para_data(ws.cell(6, 2).value)
+            val_colhido6 = ws.cell(6, 4).value
+            val_peso_final6 = ws.cell(6, 6).value
+            val_preco6 = ws.cell(6, 10).value
 
-            if val_dt_desp and val_colhido and isinstance(val_colhido, (int, float)) and val_colhido > 0:
-                colhido_kg = float(val_colhido)
-                peso_fim_g = float(val_peso_final) if val_peso_final and isinstance(val_peso_final, (int, float)) else 12.0
+            # Testa se linha 5 é Despesca (formato antigo ou parcial)
+            val_dt_desp5 = converter_para_data(ws.cell(5, 2).value)
+            val_colhido5 = ws.cell(5, 4).value
+            val_peso_final5 = ws.cell(5, 6).value
+            val_preco5 = ws.cell(5, 10).value
+
+            if val_dt_desp6 and val_colhido6 and isinstance(val_colhido6, (int, float)) and val_colhido6 > 0:
+                colhido_kg = float(val_colhido6)
+                peso_fim_g = float(val_peso_final6) if val_peso_final6 and isinstance(val_peso_final6, (int, float)) else 12.0
+                preco_kg_val = float(val_preco6) if val_preco6 and isinstance(val_preco6, (int, float)) else 22.0
                 despesca_detectada = {
-                    "data": val_dt_desp,
+                    "data": val_dt_desp6,
                     "colhido_kg": colhido_kg,
                     "peso_final_g": peso_fim_g,
+                    "preco_kg": preco_kg_val,
+                    "obs": "Despesca final importada da linha 6 da planilha de 4 ciclos."
+                }
+            elif val_dt_desp5 and val_colhido5 and isinstance(val_colhido5, (int, float)) and val_colhido5 > 0:
+                colhido_kg = float(val_colhido5)
+                peso_fim_g = float(val_peso_final5) if val_peso_final5 and isinstance(val_peso_final5, (int, float)) else 12.0
+                preco_kg_val = float(val_preco5) if val_preco5 and isinstance(val_preco5, (int, float)) else 22.0
+                despesca_detectada = {
+                    "data": val_dt_desp5,
+                    "colhido_kg": colhido_kg,
+                    "peso_final_g": peso_fim_g,
+                    "preco_kg": preco_kg_val,
                     "obs": "Despesca importada da linha 5 da planilha oficial."
                 }
 

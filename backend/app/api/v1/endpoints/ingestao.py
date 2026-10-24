@@ -22,9 +22,13 @@ def sincronizar_modelos_drive(
     db: Session = Depends(get_db)
 ) -> Dict[str, Any]:
     """Varre as pastas de 'MODELOS DE CONTROLE', processa e reconcilia os dados no banco relacional."""
-    caminho_alimentacao = (
+    caminho_alimentacao_4c = (
+        DIRETORIO_MODELOS_LOCAL / "Controle de alimentação e biometria" / "Controle_Alimentacao_4Ciclos_VisaoCompleta.xlsx"
+    )
+    caminho_alimentacao_antigo = (
         DIRETORIO_MODELOS_LOCAL / "Controle de alimentação e biometria" / "Controle_Alimentacao_e_Biometria.xlsx"
     )
+    caminho_alimentacao = caminho_alimentacao_4c if caminho_alimentacao_4c.exists() else caminho_alimentacao_antigo
     caminho_agua = (
         DIRETORIO_MODELOS_LOCAL / "Controle de qualidade de agua" / "Controle_Qualidade_Agua.xlsx"
     )
