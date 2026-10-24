@@ -143,6 +143,61 @@
 <body class="flex bg-slate-50 text-slate-800">
 
   <!-- ======================================================== -->
+  <!-- TOAST FLUTUANTE DE ATUALIZAÇÃO INCREMENTAL DE IMPORTAÇÃO -->
+  <!-- ======================================================== -->
+  <div id="toast-importacao-incremental" class="hidden fixed top-5 left-1/2 -translate-x-1/2 z-50 max-w-xl w-full px-4 animate-in fade-in slide-in-from-top-4 duration-300">
+    <div class="bg-white rounded-2xl shadow-2xl border border-emerald-200 p-4 flex flex-col gap-3">
+      <div class="flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-lg shrink-0">
+            <i class="fa-solid fa-file-circle-check text-emerald-600"></i>
+          </div>
+          <div>
+            <h4 class="font-extrabold text-slate-900 text-sm flex items-center gap-2">
+              <span>Planilha Integrada com Sucesso</span>
+              <span id="toast-diff-badge" class="px-2 py-0.2 rounded-full text-[10px] font-black bg-emerald-100 text-emerald-800 border border-emerald-200">Atualizado</span>
+            </h4>
+            <p id="toast-diff-resumo" class="text-xs text-slate-600 mt-0.5">
+              +0 tratos diários gravados em 0 viveiros.
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-toast-toggle-detalhes" onclick="toggleDetalhesToastImportacao()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-extrabold text-xs transition flex items-center gap-1.5 border border-slate-200">
+            <span>Ver Detalhes</span>
+            <i id="toast-chevron-icon" class="fa-solid fa-chevron-down text-[10px] transition duration-200"></i>
+          </button>
+          <button onclick="fecharToastImportacao()" class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg transition" title="Fechar">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Detalhes Expansíveis (Acordeom) -->
+      <div id="toast-diff-detalhes" class="hidden border-t border-slate-100 pt-3 space-y-2 text-xs">
+        <div class="grid grid-cols-3 gap-2 text-center">
+          <div class="p-2 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-[10px] text-slate-500 font-bold block">Antes</span>
+            <span id="toast-diff-antes" class="font-mono font-bold text-slate-700">0 tratos</span>
+          </div>
+          <div class="p-2 rounded-xl bg-emerald-50 border border-emerald-200">
+            <span class="text-[10px] text-emerald-700 font-bold block">Novos Inseridos</span>
+            <span id="toast-diff-novos" class="font-mono font-black text-emerald-900">+0 tratos</span>
+          </div>
+          <div class="p-2 rounded-xl bg-blue-50 border border-blue-200">
+            <span class="text-[10px] text-blue-700 font-bold block">Total Atual</span>
+            <span id="toast-diff-total" class="font-mono font-black text-blue-900">0 tratos</span>
+          </div>
+        </div>
+
+        <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1" id="toast-diff-lista-tanques">
+          <!-- Injetado dinamicamente via JS -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
   <!-- 1. MENU LATERAL EXECUTIVO (SIDEBAR DE MÓDULOS)           -->
   <!-- ======================================================== -->
   <aside id="app-sidebar" class="bg-marinho text-white w-64 shrink-0 flex flex-col justify-between transition-all duration-300 z-50 shadow-2xl relative select-none">
@@ -1069,24 +1124,15 @@
 
           <!-- Ações de Importação da Planilha e Lançamento -->
           <div class="flex flex-wrap items-center gap-2">
-            <!-- Botão Sincronizar Drive (1 Clique) -->
-                        <!-- Botão Limpar / Zerar Estado Zero -->
-            <button onclick="executarResetGeralERP()" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center gap-1.5 border border-rose-200 shadow-sm" title="Zerar todos os lançamentos e retornar ao Estado Zero">
-              <i class="fa-solid fa-trash-can"></i> Limpar / Zerar Dados
-            </button>
-            <button onclick="sincronizarPlanilhaDriveBiomassa()" class="px-3.5 py-2 rounded-xl bg-marinho hover:bg-marinho-dark text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-rotate text-blue-300"></i> Sincronizar Drive
-            </button>
-
-            <label class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer">
+            <!-- Botão Importar Planilha Oficial (SheetJS) -->
+            <label class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm cursor-pointer" title="Importar arquivo .xlsx oficial de alimentação e biometria">
               <i class="fa-solid fa-file-excel"></i> Importar .xlsx
               <input type="file" id="input-arquivo-biomassa-xlsx" accept=".xlsx,.xlsm" onchange="importarArquivoXlsxBiomassa(event)" class="hidden">
-              <input type="file" id="input-upload-excel-biomassa" accept=".xlsx,.xlsm" onchange="importarArquivoXlsxBiomassa(event)" class="hidden">
             </label>
 
-            <!-- Botão Novo Lançamento Manual -->
-            <button onclick="abrirModalLancamentoBiomassa()" class="px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
-              <i class="fa-solid fa-plus-circle"></i> Lançamento Manual
+            <!-- Botão Limpar / Zerar Dados -->
+            <button onclick="executarResetGeralERP(true)" class="px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs transition flex items-center gap-1.5 border border-rose-200 shadow-sm" title="Zerar todos os lançamentos para receber nova planilha limpa">
+              <i class="fa-solid fa-trash-can"></i> Limpar Dados
             </button>
 
             <button onclick="navegarPara('dashboard-macro')" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center gap-1.5 border border-slate-200">
@@ -1545,13 +1591,40 @@
           </div>
         </div>
 
+        <!-- Banner de Legenda Operacional e Zootécnica de FCA & DDC -->
+        <div class="p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-emerald-50/40 border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs">
+          <div class="flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-sm shrink-0">
+              <i class="fa-solid fa-book-open"></i>
+            </div>
+            <div class="space-y-1">
+              <span class="font-bold text-slate-800 text-xs flex items-center gap-2">
+                <span>Legenda Operacional & Parâmetros Zootécnicos</span>
+                <span class="px-2 py-0.2 rounded-full text-[10px] font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-200">Padrão Fazenda Ceará-Mirim/RN</span>
+              </span>
+              <div class="text-[11px] text-slate-600 space-y-0.5 leading-relaxed">
+                <div><strong>• DDC (Dias De Cultivo / DOC):</strong> Contagem oficial de dias transcorridos desde a data de povoamento no viveiro até a biometria atual ou encerramento do lote na despesca final. Viveiros vazios ou em preparação registram <code>0 dias</code>.</div>
+                <div><strong>• FCA (Fator de Conversão Alimentar):</strong> Razão matemática entre a ração total consumida (kg) e a biomassa líquida produzida (kg): <code class="font-mono bg-white px-1 py-0.5 rounded border border-slate-200">FCA = Ração Acumulada (kg) ÷ Biomassa Total (kg)</code>.</div>
+              </div>
+            </div>
+          </div>
+          <div class="flex items-center gap-3 shrink-0 text-[11px]">
+            <div class="bg-white px-3 py-1.5 rounded-xl border border-emerald-200 text-emerald-900 font-bold flex items-center gap-1.5 shadow-2xs">
+              <i class="fa-solid fa-circle-check text-emerald-600"></i> Meta: ≤ 1.30
+            </div>
+            <div class="bg-white px-3 py-1.5 rounded-xl border border-amber-200 text-amber-900 font-bold flex items-center gap-1.5 shadow-2xs">
+              <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Alerta: &gt; 1.35
+            </div>
+          </div>
+        </div>
+
         <!-- Tabela de Eficiência de FCA por Tanque -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
           <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
               <i class="fa-solid fa-ranking-star text-aco"></i> Ranking de Conversão Alimentar por Viveiro
             </h3>
-            <span class="text-xs text-slate-500">Ordenado por eficiência</span>
+            <span class="text-xs text-slate-500">Ordenado por eficiência zootécnica</span>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-700">
@@ -8371,23 +8444,109 @@
       return null;
     }
 
+    function fecharToastImportacao() {
+      const el = document.getElementById('toast-importacao-incremental');
+      if (el) el.classList.add('hidden');
+    }
+
+    function toggleDetalhesToastImportacao() {
+      const det = document.getElementById('toast-diff-detalhes');
+      const chev = document.getElementById('toast-chevron-icon');
+      if (!det) return;
+      const isHidden = det.classList.contains('hidden');
+      if (isHidden) {
+        det.classList.remove('hidden');
+        if (chev) chev.classList.add('rotate-180');
+      } else {
+        det.classList.add('hidden');
+        if (chev) chev.classList.remove('rotate-180');
+      }
+    }
+
+    function exibirBannerDiffImportacao(diff) {
+      const toast = document.getElementById('toast-importacao-incremental');
+      if (!toast) return;
+
+      const elResumo = document.getElementById('toast-diff-resumo');
+      const elAntes = document.getElementById('toast-diff-antes');
+      const elNovos = document.getElementById('toast-diff-novos');
+      const elTotal = document.getElementById('toast-diff-total');
+      const elLista = document.getElementById('toast-diff-lista-tanques');
+
+      if (elResumo) {
+        elResumo.innerHTML = `<strong>+${diff.novosTratos.toLocaleString('pt-BR')}</strong> tratos diários gravados em <strong>${diff.tanquesAtualizados.length}</strong> viveiros (${diff.novasDespescasCount} despescas reconhecidas).`;
+      }
+      if (elAntes) elAntes.innerText = `${diff.antesTratos.toLocaleString('pt-BR')} tratos`;
+      if (elNovos) elNovos.innerText = `+${diff.novosTratos.toLocaleString('pt-BR')} tratos`;
+      if (elTotal) elTotal.innerText = `${diff.totalTratos.toLocaleString('pt-BR')} tratos`;
+
+      if (elLista) {
+        let hLista = '';
+        diff.tanquesAtualizados.forEach(item => {
+          hLista += `
+            <div class="p-2 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-[11px]">
+              <span class="font-bold text-slate-800">${item.viveiro} • Lab: ${item.lab} (${item.pls ? item.pls.toLocaleString('pt-BR') : 0} PLs)</span>
+              <span class="text-emerald-700 font-extrabold">${item.novos > 0 ? `+${item.novos} novos` : 'Atualizado'} (Total: ${item.total})</span>
+            </div>
+          `;
+        });
+        if (diff.despescasDetectadas && diff.despescasDetectadas.length > 0) {
+          hLista += `<div class="p-2 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 font-extrabold text-[11px]">🏆 ${diff.despescasDetectadas.length} despesca(s) consolidada(s) com faturamento e compradores integrados.</div>`;
+        }
+        elLista.innerHTML = hLista;
+      }
+
+      toast.classList.remove('hidden');
+    }
+
+    function executarRenderSeguro(nome, fn) {
+      try {
+        fn();
+      } catch (errUI) {
+        console.error(`Erro seguro na renderização de [${nome}]:`, errUI);
+      }
+    }
+
     function importarArquivoXlsxBiomassa(event) {
       const file = (event && event.target && event.target.files) ? event.target.files[0] : (event && event.name ? event : null);
       if (!file) return;
 
       console.log('Iniciando importação da planilha oficial:', file.name);
 
+      // Snapshot pré-importação para cálculo de atualização incremental (diff)
+      const snapshotAnterior = {
+        totalTratos: 0,
+        tratosPorViv: {},
+        biometriasPorViv: {},
+        despescasPorViv: {}
+      };
+      Object.keys(DADOS_PLANILHA_VIVEIROS).forEach(vId => {
+        const viv = DADOS_PLANILHA_VIVEIROS[vId];
+        const nT = viv && viv.tratos ? viv.tratos.length : 0;
+        snapshotAnterior.totalTratos += nT;
+        snapshotAnterior.tratosPorViv[vId] = nT;
+        snapshotAnterior.biometriasPorViv[vId] = viv && viv.tratos ? viv.tratos.filter(t => t.biometria > 0).length : 0;
+        snapshotAnterior.despescasPorViv[vId] = viv && viv.despesca ? (viv.despesca.kg_colhido || 0) : 0;
+      });
+
       const reader = new FileReader();
       reader.onload = function(e) {
+        let workbook;
         try {
           const data = new Uint8Array(e.target.result);
           if (typeof XLSX === 'undefined') {
             alert('A biblioteca SheetJS ainda está carregando no navegador. Aguarde alguns segundos.');
             return;
           }
+          workbook = XLSX.read(data, { type: 'array', cellDates: true });
+        } catch (readErr) {
+          console.error('Erro na leitura física do arquivo Excel:', readErr);
+          alert('Erro ao processar a planilha. Verifique se o arquivo está no formato padrão .xlsx.');
+          return;
+        }
 
-          const workbook = XLSX.read(data, { type: 'array', cellDates: true });
-          console.log('Abas encontradas:', workbook.SheetNames);
+        try {
+          console.log('Abas encontradas na planilha:', workbook.SheetNames);
 
           let safraBasePlanilha = '2026';
           if (workbook.Sheets['Dashboard_Geral']) {
@@ -8402,7 +8561,7 @@
           let novidadesViv = {};
           let abasProcessadasCount = 0;
 
-          // 1. Processar aba Historico_Safras (se presente)
+          // 1. Processar aba Historico_Safras (se presente e preenchida)
           if (workbook.Sheets['Historico_Safras']) {
             const wsH = workbook.Sheets['Historico_Safras'];
             const rangeH = XLSX.utils.decode_range(wsH['!ref'] || 'A1:O50');
@@ -8453,7 +8612,7 @@
             }
           }
 
-          // 2. Processar as 40 abas de viveiros e ciclos
+          // 2. Processar as 40 abas de viveiros e ciclos (V01-C1 a V10-C4)
           workbook.SheetNames.forEach(sheetName => {
             const sClean = sheetName.trim();
             const m = sClean.match(/^V-?(\d{1,2})(?:-C(\d+))?$/i);
@@ -8470,7 +8629,7 @@
 
             const range = XLSX.utils.decode_range(ws['!ref']);
 
-            // Metadados Linha 2 e 3
+            // Metadados Linhas 2 e 3
             const areaVal = extrairNumeroLimpo(ws, 'B2') || 0.5;
             const labVal = extrairTextoLimpo(ws, 'D2') || 'AQUATEC';
             const pesoIniVal = extrairNumeroLimpo(ws, 'F2') || 0.01;
@@ -8480,51 +8639,144 @@
             const dataPovVal = extrairDataFormatadaCell(ws, 'D3');
             const dataBercVal = extrairDataFormatadaCell(ws, 'J3') || extrairDataFormatadaCell(ws, 'I3');
 
-            // Despesca Parcial Linha 5
-            const dataDespParc = extrairDataFormatadaCell(ws, 'B5');
-            const kgDespParc = extrairNumeroLimpo(ws, 'D5');
-            const pesoDespParc = extrairNumeroLimpo(ws, 'F5');
-            const precoDespParc = extrairNumeroLimpo(ws, 'J5') || extrairNumeroLimpo(ws, 'I5') || 22.0;
-            const compradorDespParc = extrairTextoLimpo(ws, 'M5') || extrairTextoLimpo(ws, 'L5');
+            // ----------------------------------------------------
+            // Extração de Despescas: Suporta 2 Parciais (L5 e L6) e 1 Final (L7)
+            // Retrocompatível com formato anterior onde Final estava na Linha 6
+            // ----------------------------------------------------
+            const dataDespParc1 = extrairDataFormatadaCell(ws, 'B5');
+            const kgDespParc1 = extrairNumeroLimpo(ws, 'D5');
+            const pesoDespParc1 = extrairNumeroLimpo(ws, 'F5');
+            const precoDespParc1 = extrairNumeroLimpo(ws, 'J5') || extrairNumeroLimpo(ws, 'I5') || 22.0;
+            const compDespParc1 = extrairTextoLimpo(ws, 'M5') || extrairTextoLimpo(ws, 'L5') || 'Mercado Regional';
 
-            let despParcialObj = null;
-            if (kgDespParc > 0 || dataDespParc) {
-              despParcialObj = {
-                data: dataDespParc || '-',
-                kg_colhido: kgDespParc,
-                peso_final_g: pesoDespParc,
-                preco_kg: precoDespParc,
-                comprador: compradorDespParc || 'Mercado Regional'
-              };
-            }
+            const dataDespR6 = extrairDataFormatadaCell(ws, 'B6');
+            const kgDespR6 = extrairNumeroLimpo(ws, 'D6');
+            const pesoDespR6 = extrairNumeroLimpo(ws, 'F6');
+            const precoDespR6 = extrairNumeroLimpo(ws, 'J6') || extrairNumeroLimpo(ws, 'I6') || 22.0;
+            const compDespR6 = extrairTextoLimpo(ws, 'M6') || extrairTextoLimpo(ws, 'L6') || 'Mercado Regional';
+            const lblR6 = extrairTextoLimpo(ws, 'A6').toUpperCase();
 
-            // Despesca Final Linha 6
-            const dataDespFinal = extrairDataFormatadaCell(ws, 'B6');
-            const kgDespFinal = extrairNumeroLimpo(ws, 'D6');
-            const pesoDespFinal = extrairNumeroLimpo(ws, 'F6');
-            const sobDespFinal = extrairNumeroLimpo(ws, 'H6');
-            const precoDespFinal = extrairNumeroLimpo(ws, 'J6') || extrairNumeroLimpo(ws, 'I6') || 22.0;
-            const fcaDespFinal = extrairNumeroLimpo(ws, 'K6');
-            const compradorDespFinal = extrairTextoLimpo(ws, 'M6') || extrairTextoLimpo(ws, 'L6');
+            const dataDespR7 = extrairDataFormatadaCell(ws, 'B7');
+            const kgDespR7 = extrairNumeroLimpo(ws, 'D7');
+            const pesoDespR7 = extrairNumeroLimpo(ws, 'F7');
+            const sobDespR7 = extrairNumeroLimpo(ws, 'H7');
+            const precoDespR7 = extrairNumeroLimpo(ws, 'J7') || extrairNumeroLimpo(ws, 'I7') || 22.0;
+            const fcaDespR7 = extrairNumeroLimpo(ws, 'K7');
+            const compDespR7 = extrairTextoLimpo(ws, 'M7') || extrairTextoLimpo(ws, 'L7') || 'Mercado Regional';
 
             let despFinalObj = null;
-            if (kgDespFinal > 0 || dataDespFinal) {
+            let listaDespescasParciais = [];
+
+            // Se Linha 7 contiver dados de despesca, ela é a Final oficial
+            if (kgDespR7 > 0 || dataDespR7) {
+              if (kgDespParc1 > 0 || dataDespParc1) {
+                listaDespescasParciais.push({
+                  numero: 1,
+                  data: dataDespParc1 || '-',
+                  kg_colhido: kgDespParc1,
+                  peso_final_g: pesoDespParc1 || 12.0,
+                  preco_kg: precoDespParc1,
+                  faturamento_bruto: kgDespParc1 * precoDespParc1,
+                  comprador: compDespParc1
+                });
+              }
+              if (kgDespR6 > 0 || dataDespR6) {
+                listaDespescasParciais.push({
+                  numero: 2,
+                  data: dataDespR6 || '-',
+                  kg_colhido: kgDespR6,
+                  peso_final_g: pesoDespR6 || 12.0,
+                  preco_kg: precoDespR6,
+                  faturamento_bruto: kgDespR6 * precoDespR6,
+                  comprador: compDespR6
+                });
+              }
               despFinalObj = {
-                data: dataDespFinal || '-',
-                doc: extrairNumeroLimpo(ws, 'D6'),
-                kg_colhido: kgDespFinal,
-                peso_final_g: pesoDespFinal,
-                sobrevivencia_pct: sobDespFinal || 65.0,
-                fca_real: fcaDespFinal || 1.25,
-                preco_venda_kg: precoDespFinal,
-                comprador: compradorDespFinal || 'Mercado Regional',
-                obs: `Despesca oficial registrada na planilha. Comprador: ${compradorDespFinal || 'Mercado Regional'}`
+                data: dataDespR7 || '-',
+                kg_colhido: kgDespR7,
+                peso_final_g: pesoDespR7 || 12.0,
+                sobrevivencia_pct: sobDespR7 || 65.0,
+                fca_real: fcaDespR7 || 1.25,
+                preco_venda_kg: precoDespR7,
+                faturamento_bruto: kgDespR7 * precoDespR7,
+                comprador: compDespR7,
+                obs: `Despesca final consolidada na linha 7. Comprador: ${compDespR7}`
               };
+            } else if (kgDespR6 > 0 || dataDespR6) {
+              // Se Linha 7 está vazia mas Linha 6 tem despesca (suporte legado de 4 ciclos ou parcial 2)
+              if (lblR6.includes('FINAL') || !lblR6.includes('PARCIAL')) {
+                // Linha 6 era a Final no modelo anterior
+                if (kgDespParc1 > 0 || dataDespParc1) {
+                  listaDespescasParciais.push({
+                    numero: 1,
+                    data: dataDespParc1 || '-',
+                    kg_colhido: kgDespParc1,
+                    peso_final_g: pesoDespParc1 || 12.0,
+                    preco_kg: precoDespParc1,
+                    faturamento_bruto: kgDespParc1 * precoDespParc1,
+                    comprador: compDespParc1
+                  });
+                }
+                despFinalObj = {
+                  data: dataDespR6 || '-',
+                  kg_colhido: kgDespR6,
+                  peso_final_g: pesoDespR6 || 12.0,
+                  sobrevivencia_pct: extrairNumeroLimpo(ws, 'H6') || 65.0,
+                  fca_real: extrairNumeroLimpo(ws, 'K6') || 1.25,
+                  preco_venda_kg: precoDespR6,
+                  faturamento_bruto: kgDespR6 * precoDespR6,
+                  comprador: compDespR6,
+                  obs: `Despesca final da linha 6. Comprador: ${compDespR6}`
+                };
+              } else {
+                // Linha 6 é Parcial 2 e Linha 7 ainda não ocorreu
+                if (kgDespParc1 > 0 || dataDespParc1) {
+                  listaDespescasParciais.push({
+                    numero: 1,
+                    data: dataDespParc1 || '-',
+                    kg_colhido: kgDespParc1,
+                    peso_final_g: pesoDespParc1 || 12.0,
+                    preco_kg: precoDespParc1,
+                    faturamento_bruto: kgDespParc1 * precoDespParc1,
+                    comprador: compDespParc1
+                  });
+                }
+                listaDespescasParciais.push({
+                  numero: 2,
+                  data: dataDespR6 || '-',
+                  kg_colhido: kgDespR6,
+                  peso_final_g: pesoDespR6 || 12.0,
+                  preco_kg: precoDespR6,
+                  faturamento_bruto: kgDespR6 * precoDespR6,
+                  comprador: compDespR6
+                });
+              }
+            } else if (kgDespParc1 > 0 || dataDespParc1) {
+              listaDespescasParciais.push({
+                numero: 1,
+                data: dataDespParc1 || '-',
+                kg_colhido: kgDespParc1,
+                peso_final_g: pesoDespParc1 || 12.0,
+                preco_kg: precoDespParc1,
+                faturamento_bruto: kgDespParc1 * precoDespParc1,
+                comprador: compDespParc1
+              });
             }
 
-            // Lançamentos Diários (Linha 10 em diante, índice r >= 9)
+            // ----------------------------------------------------
+            // Leitura dos Lançamentos Diários (Linha 11 em diante, ou 10 legado)
+            // ----------------------------------------------------
+            let rowStartTratos = 10; // Linha 11 (índice 0-based 10)
+            const txtA10 = extrairTextoLimpo(ws, 'A10').toUpperCase();
+            const txtA9 = extrairTextoLimpo(ws, 'A9').toUpperCase();
+            if (txtA10.includes('DATA') || txtA10.includes('DOC') || txtA10.includes('DIA')) {
+              rowStartTratos = 10;
+            } else if (txtA9.includes('DATA') || txtA9.includes('DOC') || txtA9.includes('DIA')) {
+              rowStartTratos = 9;
+            }
+
             let tratosViveiro = [];
-            for (let r = 9; r <= range.e.r; r++) {
+            for (let r = rowStartTratos; r <= range.e.r; r++) {
               const dtTrato = extrairDataFormatadaCell(ws, XLSX.utils.encode_cell({ r: r, c: 0 }));
               if (!dtTrato) continue;
 
@@ -8534,12 +8786,18 @@
               const rbVal = extrairNumeroLimpo(ws, XLSX.utils.encode_cell({ r: r, c: 4 }));
               const sbVal = extrairTextoLimpo(ws, XLSX.utils.encode_cell({ r: r, c: 5 })) || '0';
               const totDia = extrairNumeroLimpo(ws, XLSX.utils.encode_cell({ r: r, c: 6 })) || (raVal + rbVal);
-              const acum = extrairNumeroLimpo(ws, XLSX.utils.encode_cell({ r: r, c: 7 })) || totDia;
+              
+              let acum = extrairNumeroLimpo(ws, XLSX.utils.encode_cell({ r: r, c: 7 }));
+              if (acum <= 0) {
+                const antAcum = tratosViveiro.length > 0 ? (tratosViveiro[tratosViveiro.length - 1].acumulado || 0) : 0;
+                acum = antAcum + totDia;
+              }
+
               const bioVal = extrairNumeroLimpo(ws, XLSX.utils.encode_cell({ r: r, c: 8 }));
               const gmdVal = extrairNumeroLimpo(ws, XLSX.utils.encode_cell({ r: r, c: 9 }));
               const obsTxt = extrairTextoLimpo(ws, XLSX.utils.encode_cell({ r: r, c: 10 }));
 
-              if (raVal > 0 || rbVal > 0 || bioVal > 0 || obsTxt) {
+              if (raVal > 0 || rbVal > 0 || bioVal > 0 || obsTxt || totDia > 0) {
                 tratosViveiro.push({
                   data: dtTrato,
                   doc: docVal,
@@ -8558,20 +8816,44 @@
               }
             }
 
+            // Cálculo Real do DOC da Despesca (NUNCA usar peso/kg como DOC)
+            let docDespesca = 0;
+            if (dataPovVal && despFinalObj && despFinalObj.data && despFinalObj.data !== '-') {
+              const pParts = String(dataPovVal).split('/');
+              const dParts = String(despFinalObj.data).split('/');
+              if (pParts.length === 3 && dParts.length === 3) {
+                const dtP = new Date(parseInt(pParts[2], 10), parseInt(pParts[1], 10) - 1, parseInt(pParts[0], 10));
+                const dtD = new Date(parseInt(dParts[2], 10), parseInt(dParts[1], 10) - 1, parseInt(dParts[0], 10));
+                const diffD = Math.round((dtD - dtP) / (1000 * 60 * 60 * 24)) + 1;
+                if (diffD > 0 && diffD < 500) docDespesca = diffD;
+              }
+            }
+            if (!docDespesca && tratosViveiro.length > 0) {
+              docDespesca = tratosViveiro[tratosViveiro.length - 1].doc || tratosViveiro.length;
+            }
+            if (despFinalObj) despFinalObj.doc = docDespesca;
+
             // Determinar Ano/Safra
             let safraCiclo = safraAba || safraBasePlanilha;
-            if (dataPovVal && dataDespFinal) {
-              const yPov = dataPovVal.split('/')[2];
-              const yDesp = dataDespFinal.split('/')[2];
-              if (yPov && yDesp && yPov !== yDesp) {
-                safraCiclo = `${yPov}/${yDesp}`;
-              } else if (yPov) {
-                safraCiclo = yPov;
-              }
-            } else if (dataPovVal) {
-              const yPov = dataPovVal.split('/')[2];
+            if (dataPovVal) {
+              const yPov = String(dataPovVal).split('/')[2];
               if (yPov) safraCiclo = yPov;
             }
+
+            // Totais consolidados de Colheita (Parciais + Final)
+            let totKgColhido = (despFinalObj ? despFinalObj.kg_colhido : 0);
+            let totFatColheita = (despFinalObj ? (despFinalObj.kg_colhido * (despFinalObj.preco_venda_kg || 22.0)) : 0);
+            listaDespescasParciais.forEach(p => {
+              totKgColhido += (p.kg_colhido || 0);
+              totFatColheita += (p.faturamento_bruto || 0);
+            });
+
+            const todosCompradores = Array.from(new Set([
+              ...(despFinalObj ? [despFinalObj.comprador] : []),
+              ...listaDespescasParciais.map(p => p.comprador)
+            ].filter(Boolean))).join(', ') || 'Mercado Regional';
+
+            const precoMedioPonderado = totKgColhido > 0 ? (totFatColheita / totKgColhido) : 22.0;
 
             const chaveCiclo = `${safraCiclo}_${vId}_C${cicloNum}`;
             const cicloObj = {
@@ -8585,50 +8867,65 @@
               plsMil: plsMilVal,
               dataPovoamento: dataPovVal,
               dataBercario: dataBercVal,
-              despescaParcial: despParcialObj,
+              despescasParciais: listaDespescasParciais,
+              despescaParcial: listaDespescasParciais.length ? listaDespescasParciais[0] : null,
               despescaFinal: despFinalObj,
+              colheitaTotalKg: totKgColhido,
+              faturamentoTotalBruto: totFatColheita,
+              precoMedioKg: precoMedioPonderado,
+              compradores: todosCompradores,
               tratos: tratosViveiro,
-              statusLote: despFinalObj ? 'DESPESCADO' : (tratosViveiro.length ? 'EM CULTIVO ATIVO' : 'EM PREPARACAO')
+              statusLote: despFinalObj ? 'DESPESCADO' : (listaDespescasParciais.length ? 'EM CULTIVO (PARCIAL)' : (tratosViveiro.length ? 'EM CULTIVO ATIVO' : 'EM PREPARACAO'))
             };
 
             CICLOS_DATABASE[chaveCiclo] = cicloObj;
 
+            // Se o ciclo foi concluído com despesca final, consolida no histórico de safras
             if (despFinalObj) {
               despescasDetectadas.push({
                 viveiro: vId,
                 safra: safraCiclo,
                 ciclo: cicloNum,
                 data: despFinalObj.data,
-                kg: despFinalObj.kg_colhido,
+                kg: totKgColhido,
+                kg_final: despFinalObj.kg_colhido,
+                parciais_count: listaDespescasParciais.length,
                 peso: despFinalObj.peso_final_g,
                 sob: `${despFinalObj.sobrevivencia_pct}%`,
-                fca: despFinalObj.fca_real
+                fca: despFinalObj.fca_real,
+                faturamento: totFatColheita,
+                comprador: todosCompradores
               });
 
               const safraId = `SAFRA-${safraCiclo}.${cicloNum}-${vId}`;
-              const jaExiste = HISTORICO_SAFRAS_DATA.some(s => s.safraId === safraId);
-              if (!jaExiste) {
-                HISTORICO_SAFRAS_DATA.unshift({
-                  safraId: safraId,
-                  viveiroId: vId,
-                  anoSafra: safraCiclo,
-                  ciclo: cicloNum,
-                  statusSafra: 'CONCLUIDA',
-                  dataPovoamento: dataPovVal || '-',
-                  dataDespesca: despFinalObj.data,
-                  ddcTotal: despFinalObj.doc || tratosViveiro.length,
-                  lab: labVal,
-                  plsMil: plsMilVal || 50,
-                  temBercario: Boolean(dataBercVal),
-                  kgColhido: despFinalObj.kg_colhido,
-                  pesoFinalG: despFinalObj.peso_final_g,
-                  sobrevivenciaPct: despFinalObj.sobrevivencia_pct,
-                  fcaReal: despFinalObj.fca_real,
-                  precoVendaKg: despFinalObj.preco_venda_kg || 22.0,
-                  faturamentoBruto: despFinalObj.kg_colhido * (despFinalObj.preco_venda_kg || 22.0),
-                  comprador: despFinalObj.comprador || 'Mercado Regional',
-                  obs: despFinalObj.obs
-                });
+              const idxExistente = HISTORICO_SAFRAS_DATA.findIndex(s => s.safraId === safraId);
+              const safraItem = {
+                safraId: safraId,
+                viveiroId: vId,
+                anoSafra: safraCiclo,
+                ciclo: cicloNum,
+                statusSafra: 'CONCLUIDA',
+                dataPovoamento: dataPovVal || '-',
+                dataDespesca: despFinalObj.data,
+                ddcTotal: docDespesca || tratosViveiro.length,
+                lab: labVal,
+                plsMil: plsMilVal || 50,
+                temBercario: Boolean(dataBercVal),
+                kgColhido: totKgColhido,
+                desbastesKg: listaDespescasParciais.reduce((acc, p) => acc + (p.kg_colhido || 0), 0),
+                pesoFinalG: despFinalObj.peso_final_g,
+                sobrevivenciaPct: despFinalObj.sobrevivencia_pct,
+                fcaReal: despFinalObj.fca_real,
+                precoVendaKg: precoMedioPonderado,
+                faturamentoBruto: totFatColheita,
+                comprador: todosCompradores,
+                obs: `Despesca consolidada (Parciais: ${listaDespescasParciais.length}, Final: ${despFinalObj.kg_colhido}kg). Comprador: ${todosCompradores}`
+              };
+
+              if (idxExistente >= 0) {
+                HISTORICO_SAFRAS_DATA[idxExistente] = safraItem;
+              } else {
+                HISTORICO_SAFRAS_DATA.unshift(safraItem);
               }
             }
 
@@ -8646,34 +8943,54 @@
               ciclos_lidos: 4,
               tratos_lidos: tratosViveiro.length,
               lab: labVal,
-              pls: plsMilVal * 1000,
-              despesca: despFinalObj ? `${despFinalObj.data}: ${despFinalObj.kg_colhido}kg` : null
+              pls: (plsMilVal || 0) * 1000,
+              despesca: despFinalObj ? `${despFinalObj.data}: ${totKgColhido}kg total` : (listaDespescasParciais.length ? `${listaDespescasParciais.length} parciais (${totKgColhido}kg)` : null)
             };
           });
 
-          // Atualizar estado e persistir
+          // Atualizar estado global e persistir em localStorage
           ESTADO_FILTRO_PERIODO.safra = safraBasePlanilha;
           reconstruirEstadoViveirosFromCiclosDB();
           sincronizarViveirosComPlanilhaReal();
           salvarEstadoERPLocal();
 
-          atualizarDashboardMacroKPIs();
-          renderizarPillsViveirosBiomassa();
-          preencherTabelasAnaliticas();
-          if (typeof renderizarModuloCiclos === 'function') renderizarModuloCiclos();
-          if (typeof renderizarModuloDespesca === 'function') renderizarModuloDespesca();
-          if (typeof renderizarModuloEstoque === 'function') renderizarModuloEstoque();
+          // Renderização segura e resiliente dos módulos de UI
+          executarRenderSeguro('DashboardMacroKPIs', atualizarDashboardMacroKPIs);
+          executarRenderSeguro('PillsViveiros', renderizarPillsViveirosBiomassa);
+          executarRenderSeguro('TabelasAnaliticas', preencherTabelasAnaliticas);
+          if (typeof renderizarModuloCiclos === 'function') executarRenderSeguro('ModuloCiclos', renderizarModuloCiclos);
+          if (typeof renderizarModuloDespesca === 'function') executarRenderSeguro('ModuloDespesca', renderizarModuloDespesca);
+          if (typeof renderizarModuloEstoque === 'function') executarRenderSeguro('ModuloEstoque', renderizarModuloEstoque);
 
-          const relatorio = {
-            novos_lancamentos: totalTratosLidos,
-            biometrias_registradas: totalBiometrias,
-            despescas_encontradas: despescasDetectadas,
-            bercarios_identificados: bercariosDetectados,
-            novidades_por_viveiro: novidadesViv
+          // Cálculo e exibição da Notificação Incremental (Toast flutuante no topo)
+          const tanquesComMudancas = [];
+          Object.keys(novidadesViv).forEach(vId => {
+            const antesT = snapshotAnterior.tratosPorViv[vId] || 0;
+            const depoisT = novidadesViv[vId].tratos_lidos || 0;
+            if (depoisT > 0 || novidadesViv[vId].despesca) {
+              tanquesComMudancas.push({
+                viveiro: vId,
+                novos: Math.max(0, depoisT - antesT),
+                total: depoisT,
+                lab: novidadesViv[vId].lab,
+                pls: novidadesViv[vId].pls,
+                despesca: novidadesViv[vId].despesca
+              });
+            }
+          });
+
+          const diffInfo = {
+            antesTratos: snapshotAnterior.totalTratos,
+            novosTratos: Math.max(0, totalTratosLidos - snapshotAnterior.totalTratos),
+            totalTratos: totalTratosLidos,
+            tanquesAtualizados: tanquesComMudancas,
+            despescasDetectadas: despescasDetectadas,
+            novasDespescasCount: despescasDetectadas.length
           };
 
-          exibirRelatorioImportacao(relatorio);
+          exibirBannerDiffImportacao(diffInfo);
 
+          // Selecionar o primeiro viveiro com lançamentos ativos
           let primeiroVivAtivo = Object.keys(DADOS_PLANILHA_VIVEIROS).find(k => {
             const d = DADOS_PLANILHA_VIVEIROS[k];
             return d && d.tratos && d.tratos.length > 0;
@@ -8685,9 +9002,13 @@
             selecionarViveiroBiomassa(selectedViveiroIdBiomassa);
           }
 
-        } catch (err) {
-          console.error('Erro na leitura da planilha SheetJS:', err);
-          alert('Erro ao processar a planilha. Verifique se o arquivo está no formato padrão .xlsx.');
+        } catch (procErr) {
+          console.error('Erro no processamento interno dos dados da planilha:', procErr);
+          alert('Erro ao processar a planilha. Verifique se as abas e formatos correspondem ao modelo oficial.');
+        } finally {
+          if (event && event.target) {
+            try { event.target.value = ''; } catch(e){}
+          }
         }
       };
 

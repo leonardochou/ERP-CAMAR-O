@@ -336,49 +336,86 @@ class IngestorService:
                 if bercario_info and "Berçário" not in (ciclo.observacoes or ""):
                     ciclo.observacoes = (ciclo.observacoes or "") + f" | Berçário: {bercario_info}"
 
-            # Extração de Despesca Prévia (Linha 6 para 4-ciclos ou Linha 5 padrão)
-            despesca_detectada = None
-            
-            # Testa se linha 6 é Despesca Final (formato 4-ciclos)
-            val_dt_desp6 = converter_para_data(ws.cell(6, 2).value)
-            val_colhido6 = ws.cell(6, 4).value
-            val_peso_final6 = ws.cell(6, 6).value
-            val_preco6 = ws.cell(6, 10).value
-            val_comprador6 = ws.cell(6, 13).value # Coluna M: Comprador Final
+            # Extração de Despescas (Parcial 1 na Linha 5, Parcial 2 na Linha 6, Final na Linha 7)
+            # Suporta também legado com Final na Linha 6 ou Linha 5
+            despescas_encontradas = []
 
-            # Testa se linha 5 é Despesca (formato antigo ou parcial)
-            val_dt_desp5 = converter_para_data(ws.cell(5, 2).value)
-            val_colhido5 = ws.cell(5, 4).value
-            val_peso_final5 = ws.cell(5, 6).value
-            val_preco5 = ws.cell(5, 10).value
-            val_comprador5 = ws.cell(5, 13).value # Coluna M: Comprador Parcial
+            # 1. Despesca Parcial 1 (Linha 5)
+            dt_p1 = converter_para_data(ws.cell(5, 2).value)
+            kg_p1 = ws.cell(5, 4).value
+            peso_p1 = ws.cell(5, 6).value
+            preco_p1 = ws.cell(5, 10).value
+            comp_p1 = ws.cell(5, 13).value
+            if dt_p1 and kg_p1 and isinstance(kg_p1, (int, float)) and kg_p1 > 0:
+                p_kg1 = float(preco_p1) if preco_p1 and isinstance(preco_p1, (int, float)) else 22.0
+                c_nom1 = str(comp_p1).strip() if comp_p1 and str(comp_p1).strip() not in ["None", ""] else "Mercado Local / ABCC"
+                despescas_encontradas.append({
+                    "tipo": "DESBASTE",
+                    "data": dt_p1,
+                    "colhido_kg": float(kg_p1),
+                    "peso_final_g": float(peso_p1) if peso_p1 and isinstance(peso_p1, (int, float)) else 12.0,
+                    "preco_kg": p_kg1,
+                    "comprador": c_nom1,
+                    "obs": f"Despesca Parcial 1 importada da linha 5. Comprador: {c_nom1}"
+                })
 
-            if val_dt_desp6 and val_colhido6 and isinstance(val_colhido6, (int, float)) and val_colhido6 > 0:
-                colhido_kg = float(val_colhido6)
-                peso_fim_g = float(val_peso_final6) if val_peso_final6 and isinstance(val_peso_final6, (int, float)) else 12.0
-                preco_kg_val = float(val_preco6) if val_preco6 and isinstance(val_preco6, (int, float)) else 22.0
-                comprador_val = str(val_comprador6).strip() if val_comprador6 and str(val_comprador6).strip() not in ["None", ""] else "Mercado Local / ABCC"
-                despesca_detectada = {
-                    "data": val_dt_desp6,
-                    "colhido_kg": colhido_kg,
-                    "peso_final_g": peso_fim_g,
-                    "preco_kg": preco_kg_val,
-                    "comprador": comprador_val,
-                    "obs": f"Despesca final importada da linha 6 da planilha de 4 ciclos. Comprador: {comprador_val}"
-                }
-            elif val_dt_desp5 and val_colhido5 and isinstance(val_colhido5, (int, float)) and val_colhido5 > 0:
-                colhido_kg = float(val_colhido5)
-                peso_fim_g = float(val_peso_final5) if val_peso_final5 and isinstance(val_peso_final5, (int, float)) else 12.0
-                preco_kg_val = float(val_preco5) if val_preco5 and isinstance(val_preco5, (int, float)) else 22.0
-                comprador_val = str(val_comprador5).strip() if val_comprador5 and str(val_comprador5).strip() not in ["None", ""] else "Mercado Local / ABCC"
-                despesca_detectada = {
-                    "data": val_dt_desp5,
-                    "colhido_kg": colhido_kg,
-                    "peso_final_g": peso_fim_g,
-                    "preco_kg": preco_kg_val,
-                    "comprador": comprador_val,
-                    "obs": f"Despesca importada da linha 5 da planilha oficial. Comprador: {comprador_val}"
-                }
+            # 2. Despesca Parcial 2 (Linha 6) ou Final formato legado
+            dt_r6 = converter_para_data(ws.cell(6, 2).value)
+            kg_r6 = ws.cell(6, 4).value
+            peso_r6 = ws.cell(6, 6).value
+            preco_r6 = ws.cell(6, 10).value
+            comp_r6 = ws.cell(6, 13).value
+            lbl_r6 = str(ws.cell(6, 1).value or "").upper()
+
+            # 3. Despesca Final (Linha 7)
+            dt_r7 = converter_para_data(ws.cell(7, 2).value)
+            kg_r7 = ws.cell(7, 4).value
+            peso_r7 = ws.cell(7, 6).value
+            preco_r7 = ws.cell(7, 10).value
+            comp_r7 = ws.cell(7, 13).value
+
+            if dt_r7 and kg_r7 and isinstance(kg_r7, (int, float)) and kg_r7 > 0:
+                # Linha 7 é a Final oficial
+                if dt_r6 and kg_r6 and isinstance(kg_r6, (int, float)) and kg_r6 > 0:
+                    p_kg6 = float(preco_r6) if preco_r6 and isinstance(preco_r6, (int, float)) else 22.0
+                    c_nom6 = str(comp_r6).strip() if comp_r6 and str(comp_r6).strip() not in ["None", ""] else "Mercado Local / ABCC"
+                    despescas_encontradas.append({
+                        "tipo": "DESBASTE",
+                        "data": dt_r6,
+                        "colhido_kg": float(kg_r6),
+                        "peso_final_g": float(peso_r6) if peso_r6 and isinstance(peso_r6, (int, float)) else 12.0,
+                        "preco_kg": p_kg6,
+                        "comprador": c_nom6,
+                        "obs": f"Despesca Parcial 2 importada da linha 6. Comprador: {c_nom6}"
+                    })
+
+                p_kg7 = float(preco_r7) if preco_r7 and isinstance(preco_r7, (int, float)) else 22.0
+                c_nom7 = str(comp_r7).strip() if comp_r7 and str(comp_r7).strip() not in ["None", ""] else "Mercado Local / ABCC"
+                despescas_encontradas.append({
+                    "tipo": "TOTAL",
+                    "data": dt_r7,
+                    "colhido_kg": float(kg_r7),
+                    "peso_final_g": float(peso_r7) if peso_r7 and isinstance(peso_r7, (int, float)) else 12.0,
+                    "preco_kg": p_kg7,
+                    "comprador": c_nom7,
+                    "obs": f"Despesca Final consolidada da linha 7. Comprador: {c_nom7}"
+                })
+            elif dt_r6 and kg_r6 and isinstance(kg_r6, (int, float)) and kg_r6 > 0:
+                # Se linha 7 está vazia mas linha 6 tem dados (suporte retrocompatível a 4-ciclos anterior)
+                tipo_r6 = "TOTAL" if "FINAL" in lbl_r6 else ("DESBASTE" if "PARCIAL" in lbl_r6 else "TOTAL")
+                p_kg6 = float(preco_r6) if preco_r6 and isinstance(preco_r6, (int, float)) else 22.0
+                c_nom6 = str(comp_r6).strip() if comp_r6 and str(comp_r6).strip() not in ["None", ""] else "Mercado Local / ABCC"
+                despescas_encontradas.append({
+                    "tipo": tipo_r6,
+                    "data": dt_r6,
+                    "colhido_kg": float(kg_r6),
+                    "peso_final_g": float(peso_r6) if peso_r6 and isinstance(peso_r6, (int, float)) else 12.0,
+                    "preco_kg": p_kg6,
+                    "comprador": c_nom6,
+                    "obs": f"Despesca importada da linha 6 ({tipo_r6}). Comprador: {c_nom6}"
+                })
+
+            despesca_detectada = despescas_encontradas[-1] if despescas_encontradas else None
 
             # Ignora abas que estejam explicitamente em preparação sem dados
             if ciclo.status == "EM PREPARACAO":
@@ -614,60 +651,68 @@ class IngestorService:
             ).scalar() or 0.0
             ciclo.racao_total_kg = round(tot_racao, 2)
 
-            # Se houver despesca identificada, consolida e encerra o ciclo
-            if despesca_detectada:
-                d_data = despesca_detectada["data"]
-                d_kg = despesca_detectada["colhido_kg"]
-                d_peso = despesca_detectada["peso_final_g"]
-                d_obs = despesca_detectada["obs"]
-
-                ciclo.status = "ENCERRADO"
-                ciclo.data_despesca = d_data
-                ciclo.camarao_colhido_kg = d_kg
-                ciclo.peso_final_g = d_peso
-                sob_real = round(((d_kg * 1000 / d_peso) / ciclo.pls_estocadas) * 100, 1) if ciclo.pls_estocadas > 0 else 0.0
+            # Se houver despescas identificadas (Parcial 1, Parcial 2 ou Final), consolida o ciclo somando todos os valores
+            if despescas_encontradas:
+                tot_colhido_kg = sum(d["colhido_kg"] for d in despescas_encontradas)
+                tot_faturamento_rs = sum(d["colhido_kg"] * d["preco_kg"] for d in despescas_encontradas)
+                tot_animais_retirados = sum((d["colhido_kg"] * 1000.0) / d["peso_final_g"] for d in despescas_encontradas if d["peso_final_g"] > 0)
+                
+                tem_final = any(d["tipo"] == "TOTAL" for d in despescas_encontradas)
+                ult_desp = despescas_encontradas[-1]
+                
+                ciclo.status = "ENCERRADO" if tem_final else "DESPESCA_PARCIAL"
+                ciclo.data_despesca = ult_desp["data"]
+                ciclo.camarao_colhido_kg = round(tot_colhido_kg, 2)
+                ciclo.peso_final_g = ult_desp["peso_final_g"]
+                
+                sob_real = round((tot_animais_retirados / ciclo.pls_estocadas) * 100, 1) if ciclo.pls_estocadas > 0 else 0.0
                 ciclo.sobrevivencia_real_pct = sob_real
-                ciclo.fca_real_final = round(tot_racao / d_kg, 2) if d_kg > 0 else 1.25
-                ciclo.produtividade_kg_ha = round(d_kg / (viveiro.area_ha or 1.0), 2)
-                ciclo.faturamento_total_rs = round(d_kg * 22.0, 2)
+                ciclo.fca_real_final = round(tot_racao / tot_colhido_kg, 2) if tot_colhido_kg > 0 else 1.25
+                ciclo.produtividade_kg_ha = round(tot_colhido_kg / (viveiro.area_ha or 1.0), 2)
+                ciclo.faturamento_total_rs = round(tot_faturamento_rs, 2)
 
-                desp_existente = db.query(DespescaVenda).filter(
-                    DespescaVenda.fazenda_id == fazenda_id,
-                    DespescaVenda.ciclo_id == ciclo.id
-                ).first()
-                comprador_salvar = despesca_detectada.get("comprador") or "Mercado Local / ABCC"
-                preco_salvar = despesca_detectada.get("preco_kg") or 22.0
+                for desp_item in despescas_encontradas:
+                    desp_existente = db.query(DespescaVenda).filter(
+                        DespescaVenda.fazenda_id == fazenda_id,
+                        DespescaVenda.ciclo_id == ciclo.id,
+                        DespescaVenda.data == desp_item["data"]
+                    ).first()
+                    
+                    c_comprador = desp_item.get("comprador") or "Mercado Local / ABCC"
+                    c_preco = desp_item.get("preco_kg") or 22.0
+                    c_fat = round(desp_item["colhido_kg"] * c_preco, 2)
 
-                if not desp_existente:
-                    nova_desp = DespescaVenda(
-                        fazenda_id=fazenda_id,
-                        ciclo_id=ciclo.id,
-                        data=d_data,
-                        tipo_despesca="TOTAL",
-                        gramatura_media_g=d_peso,
-                        camarao_colhido_kg=d_kg,
-                        comprador=comprador_salvar,
-                        preco_kg_rs=preco_salvar,
-                        faturamento_bruto_rs=round(d_kg * preco_salvar, 2),
-                        observacoes=d_obs
-                    )
-                    db.add(nova_desp)
-                else:
-                    desp_existente.data = d_data
-                    desp_existente.gramatura_media_g = d_peso
-                    desp_existente.camarao_colhido_kg = d_kg
-                    if despesca_detectada.get("comprador"):
-                        desp_existente.comprador = despesca_detectada["comprador"]
-                    if despesca_detectada.get("preco_kg"):
-                        desp_existente.preco_kg_rs = preco_salvar
-                    desp_existente.faturamento_bruto_rs = round(d_kg * (desp_existente.preco_kg_rs or 22.0), 2)
+                    if not desp_existente:
+                        nova_desp = DespescaVenda(
+                            fazenda_id=fazenda_id,
+                            ciclo_id=ciclo.id,
+                            data=desp_item["data"],
+                            tipo_despesca=desp_item["tipo"],
+                            gramatura_media_g=desp_item["peso_final_g"],
+                            camarao_colhido_kg=desp_item["colhido_kg"],
+                            comprador=c_comprador,
+                            preco_kg_rs=c_preco,
+                            faturamento_bruto_rs=c_fat,
+                            observacoes=desp_item["obs"]
+                        )
+                        db.add(nova_desp)
+                    else:
+                        desp_existente.tipo_despesca = desp_item["tipo"]
+                        desp_existente.gramatura_media_g = desp_item["peso_final_g"]
+                        desp_existente.camarao_colhido_kg = desp_item["colhido_kg"]
+                        desp_existente.comprador = c_comprador
+                        desp_existente.preco_kg_rs = c_preco
+                        desp_existente.faturamento_bruto_rs = c_fat
+                        desp_existente.observacoes = desp_item["obs"]
 
                 relatorio_viv["despesca"] = {
-                    "data": d_data.strftime("%d/%m/%Y"),
-                    "colhido_kg": d_kg,
-                    "peso_final_g": d_peso,
-                    "comprador": comprador_salvar,
-                    "sobrevivencia_pct": sob_real
+                    "data": ult_desp["data"].strftime("%d/%m/%Y"),
+                    "colhido_kg": tot_colhido_kg,
+                    "peso_final_g": ult_desp["peso_final_g"],
+                    "comprador": ", ".join(sorted(set(d["comprador"] for d in despescas_encontradas))),
+                    "sobrevivencia_pct": sob_real,
+                    "faturamento_bruto_rs": tot_faturamento_rs,
+                    "despescas_contagem": len(despescas_encontradas)
                 }
 
             resumo["abas_processadas"].append({"aba": sheet_name, "status": "PROCESSADO", "linhas": linhas_aba})
