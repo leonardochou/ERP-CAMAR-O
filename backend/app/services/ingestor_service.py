@@ -627,23 +627,39 @@ class IngestorService:
                     bio_kg = ZootecniaService.calcular_biomassa_estimada_kg(pop_est, biometria_peso)
                     fca_p = ZootecniaService.calcular_fca_parcial(acumulado, bio_kg) if bio_kg > 0 else 0.0
 
-                    nova_bio = Biometria(
-                        fazenda_id=fazenda_id,
-                        ciclo_id=ciclo.id,
-                        data=val_data,
-                        doc=doc_val,
-                        peso_medio_g=biometria_peso,
-                        gmd_g_dia=float(gmd_val) if gmd_val and isinstance(gmd_val, (int, float)) else None,
-                        sobrevivencia_estimada_pct=85.0,
-                        populacao_estimada=pop_est,
-                        biomassa_estimada_kg=bio_kg,
-                        racao_acumulada_ate_data_kg=acumulado,
-                        fca_parcial=fca_p,
-                        observacoes=obs_str
-                    )
-                    db.add(nova_bio)
-                    resumo["biometrias_registradas"] += 1
-                    relatorio_viv["novas_biometrias"].append(f"{data_fmt}: {biometria_peso}g")
+                    bio_exist = db.query(Biometria).filter(
+                        Biometria.ciclo_id == ciclo.id,
+                        Biometria.data == val_data
+                    ).first()
+
+                    if bio_exist:
+                        bio_exist.peso_medio_g = biometria_peso
+                        bio_exist.doc = doc_val
+                        bio_exist.gmd_g_dia = float(gmd_val) if gmd_val and isinstance(gmd_val, (int, float)) else None
+                        bio_exist.populacao_estimada = pop_est
+                        bio_exist.biomassa_estimada_kg = bio_kg
+                        bio_exist.racao_acumulada_ate_data_kg = acumulado
+                        bio_exist.fca_parcial = fca_p
+                        if obs_str:
+                            bio_exist.observacoes = obs_str
+                    else:
+                        nova_bio = Biometria(
+                            fazenda_id=fazenda_id,
+                            ciclo_id=ciclo.id,
+                            data=val_data,
+                            doc=doc_val,
+                            peso_medio_g=biometria_peso,
+                            gmd_g_dia=float(gmd_val) if gmd_val and isinstance(gmd_val, (int, float)) else None,
+                            sobrevivencia_estimada_pct=85.0,
+                            populacao_estimada=pop_est,
+                            biomassa_estimada_kg=bio_kg,
+                            racao_acumulada_ate_data_kg=acumulado,
+                            fca_parcial=fca_p,
+                            observacoes=obs_str
+                        )
+                        db.add(nova_bio)
+                        resumo["biometrias_registradas"] += 1
+                        relatorio_viv["novas_biometrias"].append(f"{data_fmt}: {biometria_peso}g")
 
             # Atualiza consumo total de ração do ciclo
             tot_racao = db.query(func.sum(LancamentoAlimentacao.total_dia_kg)).filter(
