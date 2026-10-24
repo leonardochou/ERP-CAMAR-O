@@ -227,10 +227,7 @@
           <i class="fa-solid fa-boxes-stacked w-5 text-center text-orange-300"></i>
           <span class="sidebar-label">Estoque de Ração</span>
         </button>
-        <button onclick="navegarPara('analytics-mercado')" id="nav-analytics-mercado" class="nav-item w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-blue-200 hover:text-white hover:bg-white/10 transition">
-          <i class="fa-solid fa-arrow-trend-up w-5 text-center text-emerald-300"></i>
-          <span class="sidebar-label">Cotações ABCC & Mercado</span>
-        </button>
+
 
         <!-- ============================================== -->
         <!-- PILAR 4: CONTABILIDADE & FINANCEIRO            -->
@@ -560,7 +557,7 @@
               </div>
 
               <div class="text-xs font-semibold text-slate-500 relative z-10 mb-2">
-                Estoque no galpão: <strong class="text-slate-800 font-mono">14 Dias</strong> (380 sacos Guabi 35%)
+                Estoque no galpão: <span id="macro-kpi-estoque-resumo" class="font-mono text-slate-700 font-bold">Calculado via Biometria</span>
               </div>
 
               <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] relative z-10">
@@ -1716,7 +1713,7 @@
           </button>
         </div>
 
-        <!-- Alerta de Ponto Crítico de Reposição (renderizado dinamicamente se autonomia <= 7 dias) -->
+        <!-- Alerta de Ponto Crítico de Reposição (só exibido se houver consumo real e estoque baixo) -->
         <div id="estoque-banner-alerta-critico" class="hidden p-4 rounded-2xl bg-amber-50 border-2 border-amber-300 shadow-sm flex items-start gap-3.5">
           <div class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-lg flex-shrink-0">
             <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1727,62 +1724,70 @@
           </div>
         </div>
 
+        <!-- 4 Cards Executivos: Dados Reais Extraídos da Biometria e Compras -->
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
             <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
               <i class="fa-solid fa-boxes-stacked text-orange-500"></i> Saldo Físico Galpão
             </span>
-            <div class="text-3xl font-extrabold text-slate-800 font-mono" id="estoque-saldo-sacos">400 sacos</div>
-            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-saldo-kg">10.000 kg totais</div>
+            <div class="text-3xl font-extrabold text-slate-800 font-mono" id="estoque-saldo-sacos">0 sacos</div>
+            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-saldo-kg">0 kg no galpão</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
+            <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
+              <i class="fa-solid fa-wheat-awn text-amber-600"></i> Consumido na Biometria
+            </span>
+            <div class="text-2xl font-extrabold text-slate-800 font-mono" id="estoque-consumo-total-biometria">0 kg</div>
+            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-consumo-diario">Consumo: 0 kg/dia</div>
           </div>
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
             <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
               <i class="fa-solid fa-calendar-day text-emerald-500"></i> Autonomia Estimada
             </span>
-            <div class="text-2xl font-extrabold text-emerald-600 font-mono" id="estoque-autonomia-dias">-- dias</div>
-            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-consumo-diario">Consumo: -- kg/dia</div>
-          </div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
-            <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
-              <i class="fa-solid fa-bell text-amber-500"></i> Ponto de Reposição
-            </span>
-            <div class="text-2xl font-extrabold text-amber-600 font-mono" id="estoque-ponto-reposicao">7 dias (140 sacos)</div>
-            <div class="text-[11px] text-amber-700 font-semibold" id="estoque-previsao-pedido">Previsão: normal</div>
+            <div class="text-2xl font-extrabold text-slate-700 font-mono" id="estoque-autonomia-dias">-- dias</div>
+            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-previsao-pedido">Aguardando dados</div>
           </div>
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-1">
             <span class="text-xs font-bold text-slate-500 uppercase flex items-center gap-1.5">
               <i class="fa-solid fa-sack-dollar text-indigo-500"></i> Valor em Estoque
             </span>
-            <div class="text-2xl font-extrabold text-slate-800 font-mono" id="estoque-valor-total">R$ 56.000,00</div>
-            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-preco-medio">Preço médio R$ 5,60/kg</div>
+            <div class="text-2xl font-extrabold text-slate-800 font-mono" id="estoque-valor-total">R$ 0,00</div>
+            <div class="text-[11px] text-slate-500 font-semibold" id="estoque-compras-registradas">0 entradas cadastradas</div>
           </div>
         </div>
 
-        <!-- Tabela de Lotes de Ração no Galpão -->
+        <!-- Tabela de Lotes e Movimentações Reais -->
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-          <div class="p-4 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-            <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-              <i class="fa-solid fa-warehouse text-aco"></i> Lotes e Tipos de Ração em Estoque
-            </h3>
-            <span class="text-xs text-slate-500" id="estoque-data-atualizacao">Abatido pelo Arraçoamento da Biometria</span>
+          <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                <i class="fa-solid fa-warehouse text-aco"></i> Entradas, Compras & Lotes de Ração no Galpão
+              </h3>
+              <p class="text-[11px] text-slate-500">Saldo abatido em tempo real pela soma dos tratos diários lançados na planilha de biometria.</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="abrirModalEntradaEstoque()" class="px-3.5 py-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus-circle"></i> Registrar Entrada de Ração / Saldo Inicial
+              </button>
+            </div>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-slate-700">
               <thead class="bg-slate-100 text-slate-600 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
                 <tr>
+                  <th class="p-3">Data Registro</th>
                   <th class="p-3">Produto / Marca</th>
-                  <th class="p-3">Proteína</th>
-                  <th class="p-3">Granulometria</th>
-                  <th class="p-3">Saldo (Sacos)</th>
-                  <th class="p-3">Saldo (kg)</th>
-                  <th class="p-3">Autonomia</th>
-                  <th class="p-3">Lote</th>
-                  <th class="p-3">Validade</th>
+                  <th class="p-3">Fornecedor / NF</th>
+                  <th class="p-3">Qtd Entrada</th>
+                  <th class="p-3">Preço / Saco</th>
+                  <th class="p-3">Valor Total</th>
+                  <th class="p-3">Consumo Abatido</th>
+                  <th class="p-3">Saldo Atual</th>
                   <th class="p-3">Status</th>
                 </tr>
               </thead>
               <tbody id="tbody-estoque-lotes" class="divide-y divide-slate-100 font-medium">
-                <!-- Populado dinamicamente via renderizarModuloEstoque() -->
+                <!-- Populado dinamicamente apenas com dados reais via renderizarModuloEstoque() -->
               </tbody>
             </table>
           </div>
@@ -3185,48 +3190,7 @@
 
       </section>
 
-      <!-- ======================================================== -->
-      <!-- VIEW 11: MERCADO & COTAÇÕES ABCC                         -->
-      <!-- ======================================================== -->
-      <section id="view-analytics-mercado" class="hidden space-y-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-          <div class="space-y-1">
-            <div class="flex items-center space-x-2 text-xs font-semibold text-aco">
-              <span class="cursor-pointer hover:underline" onclick="navegarPara('dashboard-macro')">Dashboard</span>
-              <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-              <span>Comercial</span>
-              <i class="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
-              <span class="text-slate-600">Cotações ABCC</span>
-            </div>
-            <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-arrow-trend-up text-emerald-600"></i> Radar de Cotações ABCC & Apoio à Venda
-            </h2>
-            <p class="text-xs text-slate-500">Tabela de preços praticados no Nordeste por gramatura e calculadora de momento ótimo de despesca.</p>
-          </div>
-          <button onclick="navegarPara('dashboard-macro')" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center gap-2">
-            <i class="fa-solid fa-arrow-left"></i> Voltar ao Dashboard Geral
-          </button>
-        </div>
 
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-            <span class="text-xs font-bold text-slate-400 uppercase">Camarão 10g</span>
-            <div class="text-2xl font-extrabold text-slate-800 mt-1">R$ 18,50 / kg</div>
-          </div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-            <span class="text-xs font-bold text-slate-400 uppercase">Camarão 12g</span>
-            <div class="text-2xl font-extrabold text-emerald-600 mt-1">R$ 21,50 / kg</div>
-          </div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-            <span class="text-xs font-bold text-slate-400 uppercase">Camarão 14g</span>
-            <div class="text-2xl font-extrabold text-aco mt-1">R$ 24,00 / kg</div>
-          </div>
-          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm text-center">
-            <span class="text-xs font-bold text-slate-400 uppercase">Camarão 16g+</span>
-            <div class="text-2xl font-extrabold text-indigo-700 mt-1">R$ 27,50 / kg</div>
-          </div>
-        </div>
-      </section>
 
     
       <!-- ======================================================== -->
@@ -4411,7 +4375,6 @@
         'auditoria-central',
         'analytics-financeiro',
         'analytics-equipe',
-        'analytics-mercado',
         'analytics-povoamento',
         'analytics-despesca',
         'analytics-parametros',
@@ -5304,7 +5267,7 @@
           'dashboard-macro', 'viveiros-mapa', 'analytics-biomassa', 'analytics-fca',
           'analytics-arracoamento', 'analytics-estoque', 'analytics-agua',
           'analytics-viveiro-detalhe', 'auditoria-central', 'analytics-financeiro',
-          'analytics-equipe', 'analytics-mercado'
+          'analytics-equipe'
         ];
         views.forEach(v => {
           const el = document.getElementById(`view-${v}`);
@@ -7554,6 +7517,7 @@
           filtroPeriodo: ESTADO_FILTRO_PERIODO,
           ciclosDatabase: CICLOS_DATABASE,
           historicoSafras: HISTORICO_SAFRAS_DATA,
+          entradasEstoque: ENTRADAS_ESTOQUE_RACAO,
           ocorrenciasData: OCORRENCIAS_DATA,
           lancamentosContabeis: window.LANCAMENTOS_CONTABEIS_STATE || [],
           contabilLogs: window.CONTABIL_LOGS_BACKUP || []
@@ -7574,6 +7538,7 @@
         if (estado.filtroPeriodo) ESTADO_FILTRO_PERIODO = estado.filtroPeriodo;
         if (estado.ciclosDatabase) CICLOS_DATABASE = estado.ciclosDatabase;
         if (estado.historicoSafras) HISTORICO_SAFRAS_DATA = estado.historicoSafras;
+        if (estado.entradasEstoque) ENTRADAS_ESTOQUE_RACAO = estado.entradasEstoque;
         if (estado.ocorrenciasData) OCORRENCIAS_DATA = estado.ocorrenciasData;
         if (estado.lancamentosContabeis) window.LANCAMENTOS_CONTABEIS_STATE = estado.lancamentosContabeis;
         if (estado.contabilLogs) window.CONTABIL_LOGS_BACKUP = estado.contabilLogs;
@@ -7603,6 +7568,7 @@
       DADOS_PLANILHA_VIVEIROS = criarEstadoInicialDadosPlanilha();
       CICLOS_DATABASE = {};
       HISTORICO_SAFRAS_DATA = [];
+      ENTRADAS_ESTOQUE_RACAO = [];
       OCORRENCIAS_DATA = [];
       window.LANCAMENTOS_CONTABEIS_STATE = [];
       window.CONTABIL_LOGS_BACKUP = [];
@@ -7615,6 +7581,7 @@
       preencherTabelasAnaliticas();
       if (typeof renderizarModuloCiclos === 'function') renderizarModuloCiclos();
       if (typeof renderizarModuloDespesca === 'function') renderizarModuloDespesca();
+      if (typeof renderizarModuloEstoque === 'function') renderizarModuloEstoque();
       if (typeof renderizarModuloFinanceiro === 'function') renderizarModuloFinanceiro();
       if (typeof atualizarContadorAuditoria === 'function') atualizarContadorAuditoria();
       if (typeof renderizarModuloEquipe === 'function') renderizarModuloEquipe();
@@ -9261,175 +9228,215 @@
     // RENDERIZADOR DO MÓDULO DE ESTOQUE DINÂMICO
     // (Abate em tempo real pela biometria & arraçoamento)
     // ========================================================
+    // ========================================================
+    // GESTÃO DE ESTOQUE REAL (Abatido estritamente pela Biometria)
+    // ZERO dados inventados: saldo e lotes só aparecem se cadastrados
+    // ========================================================
+    let ENTRADAS_ESTOQUE_RACAO = [];
+
+    function abrirModalEntradaEstoque() {
+      const sacosInput = prompt("Digite a quantidade de sacos de ração que entraram no galpão (ou o seu saldo inicial atual de sacos):", "100");
+      if (!sacosInput) return;
+      const sacos = parseInt(sacosInput, 10);
+      if (isNaN(sacos) || sacos <= 0) {
+        alert("Quantidade inválida de sacos.");
+        return;
+      }
+      const produtoNome = prompt("Nome / Marca da Ração (ex: Potimar 35%, Guabi Berçário, etc.):", "Ração de Engorda 35%");
+      const fornecedor = prompt("Fornecedor / Loja / Nota Fiscal (opcional):", "Compra Local");
+      const precoSacoInput = prompt("Preço pago por saco (R$) [opcional]:", "140.00");
+      const precoSaco = parseFloat(precoSacoInput) || 140.0;
+
+      const novaEntrada = {
+        id: 'ENT-' + Date.now(),
+        data: new Date().toLocaleDateString('pt-BR'),
+        produto: produtoNome || 'Ração Padrão',
+        fornecedor: fornecedor || 'Entrada / Saldo Inicial',
+        sacos: sacos,
+        kgTotal: sacos * 25.0,
+        precoSaco: precoSaco,
+        valorTotal: sacos * precoSaco
+      };
+
+      ENTRADAS_ESTOQUE_RACAO.unshift(novaEntrada);
+      salvarEstadoERPLocal();
+      renderizarModuloEstoque();
+      alert(`Entrada de ${sacos} sacos (${(sacos * 25).toLocaleString('pt-BR')} kg) de '${novaEntrada.produto}' registrada com sucesso!`);
+    }
+
     function renderizarModuloEstoque() {
-      // 1. Saldo inicial configurado (padrão fazenda: 400 sacos de 25kg = 10.000 kg)
-      let saldoBaseKg = 10000.0;
-      
-      // 2. Entradas Contábeis (Compras registradas na conta 3.1.01 ou similares)
-      let comprasKg = 0.0;
+      // 1. Entradas reais cadastradas pelo produtor
+      let totalEntradasKg = 0.0;
+      let totalEntradasSacos = 0;
       let totalGastoRacaoRs = 0.0;
+
+      // 1.1 Entradas manuais/físicas registradas
+      (ENTRADAS_ESTOQUE_RACAO || []).forEach(e => {
+        totalEntradasKg += (Number(e.kgTotal) || (e.sacos * 25.0) || 0);
+        totalEntradasSacos += (Number(e.sacos) || 0);
+        totalGastoRacaoRs += (Number(e.valorTotal) || 0);
+      });
+
+      // 1.2 Entradas adicionais vindas de notas do Hub Contábil (se houver lançamentos reais na conta 3.1.01)
       if (typeof LANCAMENTOS_CONTABEIS_DATA !== 'undefined' && Array.isArray(LANCAMENTOS_CONTABEIS_DATA)) {
         LANCAMENTOS_CONTABEIS_DATA.forEach(lanc => {
           const cod = String(lanc.contaCodigo || lanc.conta || '');
-          const desc = String(lanc.descricao || lanc.historico || '').toLowerCase();
-          if (cod.startsWith('3.1.01') || desc.includes('ração') || desc.includes('racao') || desc.includes('guabi') || desc.includes('presence')) {
-            const v = Math.abs(Number(lanc.valorDebito || lanc.valor || 0));
-            totalGastoRacaoRs += v;
-            comprasKg += (lanc.quantidadeKg || (v / 5.60));
+          if (cod.startsWith('3.1.01') && lanc.quantidadeKg && Number(lanc.quantidadeKg) > 0) {
+            totalEntradasKg += Number(lanc.quantidadeKg);
+            totalEntradasSacos += Math.round(Number(lanc.quantidadeKg) / 25.0);
+            totalGastoRacaoRs += Math.abs(Number(lanc.valorDebito || lanc.valor || 0));
           }
         });
       }
 
-      // 3. Consumo Total de Ração Abatido da Biometria
-      let consumoTotalKg = 0.0;
-      let consumoDiarioRecenteKg = 0.0;
+      // 2. Consumo real de ração acumulada na Biometria (exclusivamente dos tratos da planilha)
+      let consumoTotalBiometriaKg = 0.0;
+      let consumoDiarioAtualKg = 0.0;
       let tanquesAtivosCount = 0;
 
       if (typeof CICLOS_DATABASE !== 'undefined' && Object.keys(CICLOS_DATABASE).length > 0) {
         Object.values(CICLOS_DATABASE).forEach(c => {
           if (c.tratos && Array.isArray(c.tratos)) {
             c.tratos.forEach(t => {
-              consumoTotalKg += (Number(t.totalDia) || 0);
+              consumoTotalBiometriaKg += (Number(t.totalDia) || 0);
             });
             if (c.statusLote !== 'DESPESCADO' && c.tratos.length > 0) {
               const ultTrato = c.tratos[c.tratos.length - 1];
-              consumoDiarioRecenteKg += (Number(ultTrato.totalDia) || 0);
+              consumoDiarioAtualKg += (Number(ultTrato.totalDia) || 0);
               tanquesAtivosCount++;
             }
           }
         });
       } else if (typeof VIVEIROS_DATA !== 'undefined' && Array.isArray(VIVEIROS_DATA)) {
         VIVEIROS_DATA.forEach(v => {
-          consumoTotalKg += (Number(v.racaoTotalKg) || 0);
-          if (v.biomassaKg > 0) {
-            consumoDiarioRecenteKg += (Number(v.racaoHojeKg) || (v.racaoTotalKg / Math.max(1, v.ddc || 1)));
+          consumoTotalBiometriaKg += (Number(v.racaoTotalKg) || 0);
+          if (v.biomassaKg > 0 && v.statusLote !== 'DESPESCADO') {
+            consumoDiarioAtualKg += (Number(v.racaoHojeKg) || 0);
             tanquesAtivosCount++;
           }
         });
       }
 
-      if (consumoDiarioRecenteKg <= 0 && tanquesAtivosCount > 0) {
-        consumoDiarioRecenteKg = tanquesAtivosCount * 25.0;
-      } else if (consumoDiarioRecenteKg <= 0) {
-        consumoDiarioRecenteKg = 150.0;
+      // 3. Saldo Físico Real
+      const saldoFisicoKg = Math.max(0, totalEntradasKg - consumoTotalBiometriaKg);
+      const saldoSacos = Math.round(saldoFisicoKg / 25.0);
+
+      // Autonomia em dias
+      let autonomiaDiasTexto = '-- dias';
+      let autonomiaNum = null;
+      if (consumoDiarioAtualKg > 0 && totalEntradasKg > 0) {
+        autonomiaNum = saldoFisicoKg / consumoDiarioAtualKg;
+        autonomiaDiasTexto = `${autonomiaNum.toFixed(1)} dias`;
+      } else if (totalEntradasKg === 0) {
+        autonomiaDiasTexto = '-- dias';
       }
 
-      // 4. Saldo Físico Real no Galpão
-      const saldoFisicoKg = Math.max(0, saldoBaseKg + comprasKg - consumoTotalKg);
-      const saldoSacos = Math.round(saldoFisicoKg / 25.0);
-      const consumoSacosDia = (consumoDiarioRecenteKg / 25.0).toFixed(1);
-      const autonomiaDias = consumoDiarioRecenteKg > 0 ? (saldoFisicoKg / consumoDiarioRecenteKg).toFixed(1) : '99';
-      const autonomiaNum = parseFloat(autonomiaDias);
-
-      const reposicaoKg = consumoDiarioRecenteKg * 7;
-      const reposicaoSacos = Math.round(reposicaoKg / 25.0);
-      const precoMedioKg = 5.60;
+      // Preço médio
+      const precoMedioKg = totalEntradasKg > 0 ? (totalGastoRacaoRs / totalEntradasKg) : 5.60;
       const valorEstoqueRs = saldoFisicoKg * precoMedioKg;
 
-      // 5. Atualizar os 4 Cards
+      // 4. Atualizar os 4 Cards
       const elSaldoSacos = document.getElementById('estoque-saldo-sacos');
       const elSaldoKg = document.getElementById('estoque-saldo-kg');
+      const elConsumoBio = document.getElementById('estoque-consumo-total-biometria');
+      const elConsumoDia = document.getElementById('estoque-consumo-diario');
       const elAutonomia = document.getElementById('estoque-autonomia-dias');
-      const elConsumo = document.getElementById('estoque-consumo-diario');
-      const elPontoRep = document.getElementById('estoque-ponto-reposicao');
       const elPrevisao = document.getElementById('estoque-previsao-pedido');
       const elValorTotal = document.getElementById('estoque-valor-total');
-      const elPrecoMedio = document.getElementById('estoque-preco-medio');
-      const elDataAtu = document.getElementById('estoque-data-atualizacao');
+      const elComprasReg = document.getElementById('estoque-compras-registradas');
       const elBanner = document.getElementById('estoque-banner-alerta-critico');
 
-      if (elSaldoSacos) elSaldoSacos.innerText = `${saldoSacos.toLocaleString('pt-BR')} sacos`;
-      if (elSaldoKg) elSaldoKg.innerText = `${Math.round(saldoFisicoKg).toLocaleString('pt-BR')} kg totais`;
-      if (elAutonomia) {
-        elAutonomia.innerText = `${autonomiaDias} dias`;
-        elAutonomia.className = autonomiaNum <= 7.0 ? 'text-2xl font-extrabold text-rose-600 font-mono' : 'text-2xl font-extrabold text-emerald-600 font-mono';
+      if (elSaldoSacos) {
+        elSaldoSacos.innerText = totalEntradasKg > 0 ? `${saldoSacos.toLocaleString('pt-BR')} sacos` : '0 sacos';
       }
-      if (elConsumo) elConsumo.innerText = `Consumo: ${Math.round(consumoDiarioRecenteKg)} kg/dia (${consumoSacosDia} sacos/dia)`;
-      if (elPontoRep) elPontoRep.innerText = `7 dias (${reposicaoSacos} sacos)`;
-      if (elPrevisao) {
-        if (autonomiaNum <= 7.0) {
-          elPrevisao.innerText = '🚨 Reposição Imediata Necessária!';
-          elPrevisao.className = 'text-[11px] text-rose-700 font-extrabold mt-1';
+      if (elSaldoKg) {
+        elSaldoKg.innerText = totalEntradasKg > 0 ? `${Math.round(saldoFisicoKg).toLocaleString('pt-BR')} kg no galpão` : 'Aguardando registro de entrada';
+      }
+      if (elConsumoBio) {
+        elConsumoBio.innerText = `${Math.round(consumoTotalBiometriaKg).toLocaleString('pt-BR')} kg`;
+      }
+      if (elConsumoDia) {
+        elConsumoDia.innerText = consumoDiarioAtualKg > 0 
+          ? `Consumo atual: ${Math.round(consumoDiarioAtualKg)} kg/dia (${(consumoDiarioAtualKg/25).toFixed(1)} sacos/dia)` 
+          : 'Consumo atual: 0 kg/dia';
+      }
+      if (elAutonomia) {
+        elAutonomia.innerText = autonomiaDiasTexto;
+        if (autonomiaNum !== null && autonomiaNum <= 7.0 && saldoFisicoKg > 0) {
+          elAutonomia.className = 'text-2xl font-extrabold text-rose-600 font-mono';
+        } else if (autonomiaNum !== null) {
+          elAutonomia.className = 'text-2xl font-extrabold text-emerald-600 font-mono';
         } else {
-          const diasAtePedido = Math.max(0, Math.round(autonomiaNum - 7));
-          elPrevisao.innerText = `Previsão de pedido: em ~${diasAtePedido} dias`;
-          elPrevisao.className = 'text-[11px] text-amber-700 font-semibold mt-1';
+          elAutonomia.className = 'text-2xl font-extrabold text-slate-700 font-mono';
         }
       }
-      if (elValorTotal) elValorTotal.innerText = `R$ ${Math.round(valorEstoqueRs).toLocaleString('pt-BR')},00`;
-      if (elPrecoMedio) elPrecoMedio.innerText = `Preço médio R$ ${precoMedioKg.toFixed(2).replace('.', ',')}/kg`;
-      if (elDataAtu) elDataAtu.innerText = `Sincronizado: ${new Date().toLocaleDateString('pt-BR')} • Abatido por ${Math.round(consumoTotalKg).toLocaleString('pt-BR')} kg de biometria`;
+      if (elPrevisao) {
+        if (autonomiaNum !== null && autonomiaNum <= 7.0 && saldoFisicoKg > 0) {
+          elPrevisao.innerText = '🚨 Reposição Necessária em Breve!';
+          elPrevisao.className = 'text-[11px] text-rose-700 font-extrabold mt-1';
+        } else if (autonomiaNum !== null) {
+          const diasAtePed = Math.max(0, Math.round(autonomiaNum - 7));
+          elPrevisao.innerText = `Previsão de pedido: em ~${diasAtePed} dias`;
+          elPrevisao.className = 'text-[11px] text-amber-700 font-semibold mt-1';
+        } else {
+          elPrevisao.innerText = 'Sem consumo ativo no período';
+          elPrevisao.className = 'text-[11px] text-slate-500 font-semibold mt-1';
+        }
+      }
+      if (elValorTotal) {
+        elValorTotal.innerText = `R$ ${Math.round(valorEstoqueRs).toLocaleString('pt-BR')},00`;
+      }
+      if (elComprasReg) {
+        const totalRegistros = (ENTRADAS_ESTOQUE_RACAO || []).length;
+        elComprasReg.innerText = totalRegistros > 0 ? `${totalRegistros} entrada(s) cadastrada(s)` : '0 entradas cadastradas';
+      }
 
+      // Alerta de banner crítico
       if (elBanner) {
-        if (autonomiaNum <= 7.0 && saldoFisicoKg > 0) {
+        if (autonomiaNum !== null && autonomiaNum <= 7.0 && saldoFisicoKg > 0) {
           elBanner.classList.remove('hidden');
           const elDesc = document.getElementById('estoque-alerta-descricao');
-          if (elDesc) elDesc.innerText = `O saldo físico atual no galpão (${saldoSacos} sacos / ${Math.round(saldoFisicoKg)} kg) é suficiente para apenas ${autonomiaDias} dias com o arraçoamento atual (${Math.round(consumoDiarioRecenteKg)} kg/dia). Providencie pedido de compra imediatamente para evitar falta de ração!`;
+          if (elDesc) elDesc.innerText = `O saldo físico atual (${saldoSacos} sacos / ${Math.round(saldoFisicoKg)} kg) é suficiente para apenas ${autonomiaDiasTexto} com o consumo diário de ${Math.round(consumoDiarioAtualKg)} kg/dia. Providencie reposição!`;
         } else {
           elBanner.classList.add('hidden');
         }
       }
 
-      // 6. Preencher Tabela de Lotes de Ração
+      // 5. Preencher Tabela de Lotes (Zero invenções!)
       const tbodyLotes = document.getElementById('tbody-estoque-lotes');
       if (tbodyLotes) {
         tbodyLotes.innerHTML = '';
-        const lotesConfig = [
-          {
-            produto: 'Guabi Nutrimar Engorda',
-            proteina: '35% PB',
-            granulometria: '1.6 mm',
-            proporcao: 0.60,
-            lote: 'GB-26-881',
-            validade: '15/01/2027'
-          },
-          {
-            produto: 'Presence Camarão Crescimento',
-            proteina: '35% PB',
-            granulometria: '1.4 mm',
-            proporcao: 0.30,
-            lote: 'PR-26-402',
-            validade: '28/02/2027'
-          },
-          {
-            produto: 'Guabi Inicial Micropeletizada',
-            proteina: '40% PB',
-            granulometria: '0.8 - 1.0 mm',
-            proporcao: 0.10,
-            lote: 'GB-26-109',
-            validade: '10/03/2027'
-          }
-        ];
-
-        lotesConfig.forEach(l => {
-          const kgProd = Math.round(saldoFisicoKg * l.proporcao);
-          const sacosProd = Math.round(kgProd / 25.0);
-          const consProdDia = consumoDiarioRecenteKg * l.proporcao;
-          const autProdDias = consProdDia > 0 ? (kgProd / consProdDia).toFixed(1) : '-';
-          const autNumProd = parseFloat(autProdDias);
-
-          let statusBadge = '<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Normal</span>';
-          if (autNumProd <= 5.0) {
-            statusBadge = '<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-800 font-bold text-[10px]">Crítico</span>';
-          } else if (autNumProd <= 8.0) {
-            statusBadge = '<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold text-[10px]">Atenção</span>';
-          }
-
-          const tr = document.createElement('tr');
-          tr.className = 'hover:bg-slate-50 transition';
-          tr.innerHTML = `
-            <td class="p-3 font-bold text-slate-900">${l.produto}</td>
-            <td class="p-3">${l.proteina}</td>
-            <td class="p-3">${l.granulometria}</td>
-            <td class="p-3 font-extrabold text-slate-800 font-mono">${sacosProd}</td>
-            <td class="p-3 font-mono">${kgProd.toLocaleString('pt-BR')} kg</td>
-            <td class="p-3 font-bold ${autNumProd <= 7 ? 'text-amber-700' : 'text-emerald-600'}">${autProdDias} dias</td>
-            <td class="p-3 font-mono text-slate-600">${l.lote}</td>
-            <td class="p-3 text-slate-600">${l.validade}</td>
-            <td class="p-3">${statusBadge}</td>
+        if (!ENTRADAS_ESTOQUE_RACAO || ENTRADAS_ESTOQUE_RACAO.length === 0) {
+          tbodyLotes.innerHTML = `
+            <tr>
+              <td colspan="9" class="p-8 text-center text-slate-400 font-medium italic">
+                <i class="fa-solid fa-boxes-stacked text-3xl text-slate-300 block mb-2"></i>
+                Nenhum lote ou compra de ração cadastrada no galpão.<br>
+                <span class="text-xs font-normal text-slate-400">
+                  O consumo é abatido automaticamente conforme os tratos forem lançados na biometria.
+                  Clique no botão acima para registrar suas compras reais ou o saldo inicial de sacos do seu galpão.
+                </span>
+              </td>
+            </tr>
           `;
-          tbodyLotes.appendChild(tr);
-        });
+        } else {
+          ENTRADAS_ESTOQUE_RACAO.forEach(e => {
+            const tr = document.createElement('tr');
+            tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
+            tr.innerHTML = `
+              <td class="p-3 font-semibold text-slate-700">${e.data}</td>
+              <td class="p-3 font-bold text-slate-900">${e.produto}</td>
+              <td class="p-3 text-slate-600">${e.fornecedor}</td>
+              <td class="p-3 font-mono font-extrabold text-slate-800">${e.sacos} sacos (${e.kgTotal.toLocaleString('pt-BR')} kg)</td>
+              <td class="p-3 font-mono text-slate-700">R$ ${e.precoSaco.toFixed(2)}</td>
+              <td class="p-3 font-mono font-black text-slate-900">R$ ${Math.round(e.valorTotal).toLocaleString('pt-BR')}</td>
+              <td class="p-3 font-mono text-amber-800">${Math.round(consumoTotalBiometriaKg).toLocaleString('pt-BR')} kg</td>
+              <td class="p-3 font-mono font-black text-emerald-800">${saldoSacos} sacos (${Math.round(saldoFisicoKg).toLocaleString('pt-BR')} kg)</td>
+              <td class="p-3"><span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">Ativo</span></td>
+            `;
+            tbodyLotes.appendChild(tr);
+          });
+        }
       }
     }
 
